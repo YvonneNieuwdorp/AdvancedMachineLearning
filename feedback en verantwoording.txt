@@ -1,0 +1,24 @@
+FEEDBACK week 1:
+ - Werk in .py bestand
+ - Werk met functies
+ - Code moet repeatable zijn
+
+VERANTWOORDING
+Yvonne: 
+- def clean_books(input_dir, output_dir) gemaakt
+- def train_and_tokenize(clean_dir, model_output_dir, vocab_size=10000) gemaakt
+
+AI gebruik:
+- commentaar toegevoegd aan functies
+- Herschrijving bij gemaakte fouten toen ik er niet meer uitkwam, bijvoorbeeld bij het vinden van de juiste index bij de inhoudsopgave
+- Ideeën geven wanneer ik zelf vast liep en hoe ik dan verder kon, daarna deze code geïmplementeerd
+
+
+Jessie: 
+- Lemmatization en stemming functies gemaakt
+- Verschil berekend tussen de twee
+- Alles mooi in een pipeline gezet
+- Puntjes op de i 
+
+AI gebruik: 
+- Commentaar toegevoegd aan functies
