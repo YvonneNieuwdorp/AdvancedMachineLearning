@@ -1,24 +1,30 @@
-FEEDBACK week 1:
- - Werk in .py bestand
- - Werk met functies
- - Code moet repeatable zijn
+FEEDBACK Week 1
 
-VERANTWOORDING
-Yvonne: 
-- def clean_books(input_dir, output_dir) gemaakt
-- def train_and_tokenize(clean_dir, model_output_dir, vocab_size=10000) gemaakt
-
-AI gebruik:
-- commentaar toegevoegd aan functies
-- Herschrijving bij gemaakte fouten toen ik er niet meer uitkwam, bijvoorbeeld bij het vinden van de juiste index bij de inhoudsopgave
-- Ideeën geven wanneer ik zelf vast liep en hoe ik dan verder kon, daarna deze code geïmplementeerd
+ - Work in a `.py` file
+ - Use functions
+ - Code must be repeatable
 
 
-Jessie: 
-- Lemmatization en stemming functies gemaakt
-- Verschil berekend tussen de twee
-- Alles mooi in een pipeline gezet
-- Puntjes op de i 
+DIVISION OF LABOUR
 
-AI gebruik: 
-- Commentaar toegevoegd aan functies
+Yvonne
+Contributions:
+ - Implemented `def clean_books(input_dir, output_dir)` to remove Project Gutenberg boilerplate and clean the raw text files.
+ - Implemented `def train_and_tokenize(clean_dir, model_output_dir, vocab_size=10000)` to train a BPE tokenizer and save both the tokenizer and tokenized outputs.
+
+AI usage:
+ - Used AI to add and standardize function comments.
+ - Asked AI for help when encountering logical issues (e.g., correctly determining the index range for removing the table of contents).
+ - Requested conceptual guidance when getting stuck, then implemented the suggested ideas independently in the final code.
+
+
+Jessie
+Contributions:
+ - Implemented load_tokens(books), lemma_corpus(tokens) and stem_corpus(tokens).
+ - Calculated and analyzed the difference between the number of unique lemmas and stems.
+ - Structured the script into a clear and repeatable NLP preprocessing pipeline.
+ - Polished the overall script to improve readability and consistency.
+
+AI usage:
+ - Used AI to add and standardize function comments.
+ - Requested minor guidance on improving code structure and readability, which was then manually implemented and adjusted.
