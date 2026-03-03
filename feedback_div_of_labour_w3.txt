@@ -1,0 +1,74 @@
+In this third assignment, we move from preprocessing to language modelling. Language models
+assign probabilities to sequences of words. Instead of only counting or normalizing tokens, we
+now attempt to model how words follow each other. This allows us to:
+
+    - Estimate the probability of a word given its context
+    - Compare different modelling assumptions
+    - Generate new text fragments from a learned statistical model
+
+We will focus on n-gram language models for now, specifically bigrams and trigrams.
+
+ASSIGNMENT
+Create both bigram and trigram language models for the corpus of book texts using word
+tokens (We will come back to BPE tokenisation when we create language models using neural networks). 
+For each 𝑛-gram with 𝑛 ∈ {2, 3} create a model both with and without Laplace smoothing (add one).
+Using both the bi- and trigram models in the unsmoothed versions, implement a method to
+predict the next word for a given sequence of words (based on the last, or the last two words of
+the sequence). Test your sentence generating method by calling it repeatedly for a number of
+times, each time adding to the word sequence.
+Reflect on the quality of the generated sentence (fragments).
+Note: you should probably just remove all non-word characters in your pre-processing. Possibly
+keep an end-of-sentence token.
+
+DELIVERABLES
+1. Implementation
+You will implement the analysis described under Assignment using Python and libraries of your
+choice. Please enclose your implementation (and only the implementation) of the previous
+assignment (pre-processing the dataset) and make sure these scripts work when executed in
+the correct order, given the original dataset, without further intervention.
+
+2. Documentation
+Submit your documented implementation, for example, in the form of a zipped folder
+containing Python scripts or notebooks. Make sure to document the choices made for the
+analysis described in this assignment. And, most importantly, document the outcome of your
+analysis (best model) and reflection on the quality of the predictions made in clear and
+descriptive way.
+
+3. Individual contribution and AI-use
+Describe which parts of the assignment you have completed and for which aspects you were
+responsible.
+Include an appendix explaining whether and how AI was used in completing the assignment.
+
+
+DIVISION OF LABOUR
+
+Jessie
+Contributions:
+ - Implemented preprocess_corpus()
+ - Implemented build_ngram_counts() 
+ - Implemented build_ngram_model() 
+ - Implemented build_ngram_model_laplace() 
+ - Structured the main modelling pipeline to include the implemented functions
+
+Sources:
+ - How do you create nested dict in Python?
+    https://stackoverflow.com/questions/16333296/how-do-you-create-nested-dict-in-python
+ - CountVectorizer
+    https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.CountVectorizer.html
+ - collections — Container datatypes
+    https://docs.python.org/3/library/collections.html#collections.defaultdict
+ - n-grams in python.
+    https://stackoverflow.com/questions/17531684/n-grams-in-python-four-five-six-grams
+
+AI usage:
+ - Used AI to gather appropriate sources for the assignment
+ - Used AI to add and standardize function comments.
+ - Requested minor guidance on improving code structure and readability, which was then manually implemented and adjusted.
+
+
+Yvonne
+Contributions:
+ - 
+
+AI usage:
+ - 
