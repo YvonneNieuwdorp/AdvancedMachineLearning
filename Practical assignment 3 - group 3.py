@@ -2,6 +2,16 @@ import re
 from pathlib import Path
 import re
 from collections import defaultdict, Counter
+import random
+
+# Nodige functies:
+# - preprocess_corpus()
+# - build_ngram_counts()
+# - build_ngram_model()
+# - build_ngram_model_laplace()
+# - predict_next_word()
+# - generate_sentence()
+# - main()
 
 # Preprocessing
 def preprocess_corpus(clean_dir):
@@ -103,25 +113,102 @@ def build_ngram_model_laplace(ngram_counts, context_counts, vocabulary):
 
     return dict(model), V
 
-# Nog te doen
-# Next-Word Prediction (Unsmoothed Only)
-# Sentence Generation
-# Compare Models
-# Reflection Section 
+def predict_next_word(model, context, top_k=1):
+    """
+    Predicts the next word based on the given context.
 
-# Nodige functies:
-# - preprocess_corpus()
-# - build_ngram_counts()
-# - build_ngram_model()
-# - build_ngram_model_laplace()
-# - predict_next_word()
-# - generate_sentence()
-# - main()
+    Parameters
+    model : dict
+        n-gram language model
+    context : tuple
+        previous word(s)
+    top_k : int
+        number of predictions to return
 
-# Vul main aan met functies
+    Returns
+    list of tuples (word, probability)
+    """
+
+    if context not in model:
+        return []
+
+    next_words = model[context]
+
+    # sort by probability
+    sorted_words = sorted(
+        next_words.items(),
+        key=lambda x: x[1],
+        reverse=True
+    )
+
+    return sorted_words[:top_k]
+
+def generate_sentence(model, start_context, max_length=20):
+    """
+    Generates a sentence using an n-gram model.
+
+    Parameters
+    model : dict
+    start_context : tuple
+    max_length : int
+
+    Returns: str
+    """
+
+    context = start_context
+    sentence = list(context)
+
+    for _ in range(max_length):
+
+        if context not in model:
+            break
+
+        next_words = model[context]
+
+        words = list(next_words.keys())
+        probabilities = list(next_words.values())
+
+        next_word = random.choices(words, probabilities)[0]
+
+        if next_word == '<EOS>':
+            break
+
+        sentence.append(next_word)
+
+        # update context
+        context = tuple(sentence[-len(context):])
+
+    return " ".join(sentence)
+
+
+def compare_models(bigram_model, trigram_model):
+    print("\nVoorbeeld voorspellingen:\n")
+
+    contexts = [
+        ('the',),
+        ('in',),
+        ('of',)
+    ]
+
+    for context in contexts:
+
+        print("Context:", context)
+
+        bigram_pred = predict_next_word(bigram_model, context, top_k=3)
+        print("Bigram:", bigram_pred)
+
+        trigram_context = context
+        if len(context) == 1:
+            trigram_context = ('the', context[0])
+
+        trigram_pred = predict_next_word(trigram_model, trigram_context, top_k=3)
+        print("Trigram:", trigram_pred)
+
+        print()
+
 
 def main():
-    
+
     clean_dir = Path('cleaned_books')
 
     # preprocessing
@@ -145,6 +232,24 @@ def main():
         tri_context,
         vocabulary
     )
+
+    # Example prediction
+    print("\nNext word prediction\n")
+
+    context = ('the',)
+    predictions = predict_next_word(bigram_model, context, top_k=5)
+
+    for word, prob in predictions:
+        print(word, prob)
+
+    # Sentence generation
+    print("\nGenerated sentence\n")
+
+    sentence = generate_sentence(bigram_model, ('the',))
+    print(sentence)
+
+    # Compare models
+    compare_models(bigram_model, trigram_model)
 
     return {
         'bigram': bigram_model,

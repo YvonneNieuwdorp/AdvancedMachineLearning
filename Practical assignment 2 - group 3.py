@@ -18,7 +18,7 @@ TXT_PATTERN = '*.[tT][xX][tT]'
 path_y = r'C:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Data Science\Advanced Machine Learning\AdvancedMachineLearning\downloaded_books'
 path_j = r'C:\Users\Jessi\OneDrive\Bureaublad\Fontys\AML\AdvancedMachineLearning\downloaded_books'
 
-input_dir = Path(path_j)
+input_dir = Path(path_y)
 project_dir = input_dir.parent # Pakt de bovenliggende map = AdvancedMachineLearning 
 output_dir = project_dir / 'cleaned_books' 
 output_dir.mkdir(parents=True, exist_ok=True) 
@@ -183,7 +183,7 @@ def main():
     
     print('Starting NLP preprocessing pipeline...')
 
-    input_dir = Path(path_j)
+    input_dir = Path(path_y)
     project_dir = input_dir.parent
     output_dir = project_dir / 'cleaned_books'
     model_dir = project_dir / 'tokenizer_model'

@@ -68,7 +68,11 @@ AI usage:
 
 Yvonne
 Contributions:
- - 
-
+ - Function predict_next_word
+ - Function generate_sentence
+ - Function def compare_models
+ 
 AI usage:
- - 
+ - Asking for sources
+ - Explanation for how functions could be structured, which I adapted in the code
+ - Fixing errors
