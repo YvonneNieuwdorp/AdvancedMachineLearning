@@ -1,0 +1,36 @@
+Yvonne: 
+Contribution
+- Loading dataset and dividing author
+- Cleaning tweets
+- train-test split
+- Vectorizing data
+
+AI Usage
+- When I applied code from a source, it didn't work. I used ChatGPT to see what went wrong to correct the mistake. 
+- Adding comments
+
+Sources
+- https://huggingface.co/docs/datasets/v1.2.1/loading_datasets.html
+- https://www.kaggle.com/code/ragnisah/text-data-cleaning-tweets-analysis
+- https://stackoverflow.com/questions/51994254/removing-url-from-a-column-in-pandas-dataframe
+- https://stackoverflow.com/questions/66436768/how-to-remove-user-hashtag-and-links-from-tweet-text-and-put-it-into-datafram
+- https://stackoverflow.com/questions/57514169/how-can-i-remove-emojis-from-a-dataframe
+
+Jessie:
+Contribution
+- Implemented evaluation functions for Logistic Regression and Naive Bayes models.
+- Added example sentence prediction functionality to test model predictions on arbitrary text.
+- Added emoji handling using the emoji library to convert emojis into descriptive text.
+- Restructured the code into functions and a main() pipeline.
+- Made the load_data() function configurable to allow selection of specific authors or the top N most frequent authors.
+
+AI Usage
+- Received suggestions for improving code structure, which were then implemented independently.
+- Consulted AI to suggest enhancements for load_data() configurability and emoji handling.
+- Added docstrings and inline comments to functions.
+
+Sources
+- https://pypi.org/project/emoji/
+- https://scikit-learn.org/stable/modules/generated/sklearn.feature_extraction.text.TfidfVectorizer.html
+- https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LogisticRegression.html
+- https://scikit-learn.org/stable/modules/generated/sklearn.naive_bayes.MultinomialNB.html
