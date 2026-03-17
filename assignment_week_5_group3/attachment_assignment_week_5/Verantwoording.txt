@@ -1,0 +1,44 @@
+Advanced Machine Learning – Natural Language Processing
+Practical Assignment
+Context
+As an applied mathematician on the job, you will often encounter problems that require solutions that are not discussed in our programme. These solutions are often written in scientific papers published by journals with limited physical space (since there is only so much paper you can print). A side effect is that these texts are often dense in information and hard to comprehend. Therefore, it is useful to practice reading and processing such a scientific paper, albeit one about a subject you are fairly familiar with already.
+
+The paper that you will be reading is about the comparison of two Naïve Bayes models. Naïve Bayes models exist since the ‘60s and are available in all kinds of different flavours. Two flavours are the Multi-Variate Bernoulli model and the Multinomial Model. The difference between these models is big in theory, but subtle in practice.
+
+Apparently there was some confusion about the differences in the scientific community and therefore Andrew McCallum and Kamal Nigam felt the need to clear up this confusion. They wrote the paper A Comparison of Event Models for Naïve Bayes Text Classification, which you can find here: http://www.kamalnigam.com/papers/multinomial-aaaiws98.pdf.
+Assignment Part 2
+This assignment is a continuation of the theoretical assignment of week 4.
+The paper concludes with a section on experimental results (page 4 and on). In this section, the authors describe their analysis of several datasets using both methods under discussion in the paper. You are going to try to replicate the experiment for one of the datasets used by McCallum and Nigam.
+It is helpful to follow some standard steps to replicate the experiment:
+1.	Describe the dataset
+You might think properties like the source of the corpus, number of documents, number of classes, using train/test split or cross-validation, any filtering applied.
+2.	Description of pre-processing
+Describe the steps taking in converting the raw documents into tokens, like tokenization, lowercasing, stop-word removal, stemming or lemmatization, vocabulary size, handling of rare words.
+3.	Feature engineering
+Describe the conversion of the pre-processed text into numerical representations.
+4.	Model specification
+Description of the model, name model assumptions, model hyperparameters available, smoothing methods available.
+5.	Training phase
+Specify model hyperparameters, applied smoothing method
+6.	Evaluation
+Description of train/test split or cross-validation used, performance metrics, number of runs (for cross-validation or averages), experimental conditions like vocabulary size.
+7.	Results
+Present the output of the evaluation, graph performance metrics, compare results for different models
+8.	Discussion 
+Which model performed better, can you explain why this is the case, and, most importantly in this case, do your results match the findings presented in the paper?
+9.	Reflection
+Looking back at your replicating the experiment, what went well and did you run into any problems along the way? Is the information provided in the paper clear enough to replicate the experiment?
+
+To help you setup the replication, you are provided with one of the datasets, the Reuters dataset. We also provide you with some code to extract the documents from the raw source material, along with the appropriate class labels for each document and the selection of documents for the train/test split as prescribed by the paper.
+You will describe (see hints above) and implement the experiment. Make sure to align your choices with those of the authors of the paper, to allow your results to be compared. So choose the same evaluation criteria and report your results in similarly styled graphs, that should ease the comparison to be made in the discussion section.
+
+
+Yvonne: 
+Contributions: 
+- 
+
+AI usage: 
+- 
+
+Source: 
+https://medium.com/@hamzahere52/building-tokenizers-from-scratch-a-complete-guide-to-llm-text-processing-11ff79cb72d0
