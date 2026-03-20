@@ -9,6 +9,7 @@ from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.naive_bayes import MultinomialNB, BernoulliNB
 from sklearn.metrics import precision_score, recall_score, f1_score
 import numpy as np
+import matplotlib.pyplot as plt
 
 __all__ = [
     "iter_sgm_files",
@@ -107,7 +108,6 @@ def iter_sgm_files(folder: Path) -> Generator[dict, None, None]:
             record["record_ix"] = ix
             yield record
 
-print(list(SRC_FOLDER.glob("*.sgm")))
 
 # DATA LOADING
 df = pd.DataFrame(iter_sgm_files(SRC_FOLDER))
@@ -178,33 +178,67 @@ for topic in top_10:
     # Calulate metrics 
     metrics = {
         "topic": topic,
-
         "mnb_precision": precision_score(y_test, pred_mnb, zero_division=0),
         "mnb_recall": recall_score(y_test, pred_mnb, zero_division=0),
         "mnb_f1": f1_score(y_test, pred_mnb, zero_division=0),
-
         "bnb_precision": precision_score(y_test, pred_bnb, zero_division=0),
         "bnb_recall": recall_score(y_test, pred_bnb, zero_division=0),
         "bnb_f1": f1_score(y_test, pred_bnb, zero_division=0),
     }
-
     results.append(metrics)
 
-
-# RESULTS OVERVIEW
-# Convert results into a DataFrame for easier analysis and comparison.
+# CLEAN RESULTS
 results_df = pd.DataFrame(results).round(3)
+clean_df = results_df[['topic', 'mnb_f1', 'bnb_f1']]
 
-print("\nResults per topic:")
-print(results_df)
+clean_df = clean_df.sort_values(by='mnb_f1', ascending=False)
 
-# Calculate average performance
+print("\nF1-score per topic:")
+print(clean_df)
+
+
+# AVERAGE PERFORMANCE
 avg_results = results_df.mean(numeric_only=True).round(3)
 
-print("\nAverage performance:")
-print(avg_results)
+comparison_df = pd.DataFrame({
+    "Model": ["Multinomial NB", "Bernoulli NB"],
+    "Average F1": [avg_results['mnb_f1'], avg_results['bnb_f1']]
+})
 
-# Print a comparison between the two models based on average F1-score.
-print("\nModel comparison (based on F1-score):")
-print(f"Multinomial NB avg F1: {avg_results['mnb_f1']:.4f}")
-print(f"Bernoulli NB avg F1: {avg_results['bnb_f1']:.4f}")
+print("\nModel comparison:")
+print(comparison_df)
+
+
+# PLOTS
+# Average comparison plot
+plt.figure()
+plt.bar(["Multinomial NB", "Bernoulli NB"],
+        [avg_results['mnb_f1'], avg_results['bnb_f1']])
+
+plt.title("Average F1-score per Model")
+plt.xlabel("Model")
+plt.ylabel("F1-score")
+plt.tight_layout()
+plt.show()
+
+# Per-topic comparison plot
+plt.figure()
+
+x = np.arange(len(clean_df['topic']))
+width = 0.35
+
+plt.bar(x - width/2, clean_df['mnb_f1'], width, label="Multinomial NB")
+plt.bar(x + width/2, clean_df['bnb_f1'], width, label="Bernoulli NB")
+
+plt.xticks(x, clean_df['topic'], rotation=45)
+plt.ylabel("F1-score")
+plt.title("F1-score per Topic")
+plt.legend()
+
+plt.tight_layout()
+plt.show()
+
+
+# EXPORT (FOR REPORT)
+results_df.to_csv("results_per_topic.csv", index=False)
+comparison_df.to_csv("model_comparison.csv", index=False)

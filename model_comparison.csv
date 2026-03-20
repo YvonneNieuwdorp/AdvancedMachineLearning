@@ -1,0 +1,3 @@
+Model,Average F1
+Multinomial NB,0.726
+Bernoulli NB,0.383
