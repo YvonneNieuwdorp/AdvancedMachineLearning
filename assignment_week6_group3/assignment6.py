@@ -15,13 +15,47 @@ relevant articles can still be found.
 We will work with the Reuters news article dataset from Assignment 5 for this problem.
 Find below a list of instructions that help you to approach this assignment.
 """
-
+import os
+import pandas as pd
+from bs4 import BeautifulSoup
+from pathlib import Path
 
 # Load the Reuters dataset from the previous assignment in a pandas dataframe
 # We do not focus on the topic of the article in this exercise. Therefore, modify the function iter_sgm_files to load 
 # all articles, not only the ones that have a topic provided
+DATA_DIR = Path(__file__).parent / 'reuters'
 
+def iter_sgm_files(data_dir=DATA_DIR):
+    """Generator die alle artikelen uit de .sgm bestanden in de map data_dir yield."""
+    for filename in sorted(os.listdir(data_dir)):
+        if filename.endswith('.sgm'):
+            file_path = data_dir / filename
+            with open(file_path, 'r', encoding='latin1') as f:
+                sgm_content = f.read()
+                soup = BeautifulSoup(sgm_content, 'html.parser')
+                for reuters in soup.find_all('reuters'):
+                    # Haal alle artikelen, ongeacht topics
+                    text = ''
+                    if reuters.body:
+                        text = reuters.body.get_text()
+                    topics = [d.get_text() for d in reuters.topics.find_all('d')] if reuters.topics else []
+                    yield {
+                        'id': reuters.get('newid'),
+                        'text': text,
+                        'topics': topics
+                    }
 
+def load_reuters(data_dir=DATA_DIR):
+    """Laadt alle artikelen in een pandas DataFrame"""
+    articles = list(iter_sgm_files(data_dir))
+    df = pd.DataFrame(articles)
+    print(f'Number of articles loaded: {len(df)}')
+    return df
+
+if __name__ == '__main__':
+    df = load_reuters()
+    print(df.head())
+    
 # Preprocess and tokenize the text in the articles. You might want to make the text lowercase, remove punctuation and 
 # stopwords.
 
