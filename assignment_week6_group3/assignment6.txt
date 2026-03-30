@@ -22,9 +22,17 @@ AI usage:
 
 Yvonne
 Contributions:
- - 
+ - def document_embedding
+ - def cosine_similarity
+ - def search
+ - def print_results
+ - implemented these functions in main pipeline
 
 AI usage:
- - 
+ - Used to provide sources for information
+      - https://www.geeksforgeeks.org/python/how-to-calculate-cosine-similarity-in-python/
+      - https://www.geeksforgeeks.org/python/python-word-embedding-using-word2vec/
+ - Used for fixing errors with implementation from the sources
+ - Used for neat formatting for printing the results
 
 

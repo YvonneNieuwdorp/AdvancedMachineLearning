@@ -21,15 +21,17 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from pathlib import Path
 import re
+import numpy as np
 from gensim.models import Word2Vec
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 import nltk
+from numpy.linalg import norm
 
 # Only run these lines once
-# nltk.download('punkt')
-# nltk.download('stopwords')
-# nltk.download('punkt_tab')
+#nltk.download('punkt')
+#nltk.download('stopwords')
+#nltk.download('punkt_tab')
 
 # Load the Reuters dataset from the previous assignment in a pandas dataframe
 # We do not focus on the topic of the article in this exercise. Therefore, modify the function iter_sgm_files to load 
@@ -106,15 +108,40 @@ def train_word2vec(tokenized_texts):
 
 # Embed each of the articles with your model. Recall from the lecture that you can either average the embedding of each 
 # word in the article or do a weighted average based on the TF-IDF vectorizer. Which versions gives you better results?
+def document_embedding(tokens, model):
+    valid_tokens = [t for t in tokens if t in model.wv]
 
+    if not valid_tokens:
+        return np.zeros(model.vector_size)
+
+    vectors = [model.wv[t] for t in valid_tokens]
+    return np.mean(vectors, axis=0)
 
 # Finally write a function search(query, top_k), where query is your search string, and return a list of the closest 
 # top_k articles to your query. As a measure for similarity, we use the cosine similarity.
+def cosine_similarity(vec1, vec2):
+    if norm(vec1) == 0 or norm(vec2) == 0:
+        return 0
+    return np.dot(vec1, vec2) / (norm(vec1) * norm(vec2))
 
+def search(query, top_k, model, df):
+    query_tokens = preprocess_text(query)
+    query_vec = document_embedding(query_tokens, model)
+
+    df['similarity'] = df['embedding'].apply(
+        lambda x: cosine_similarity(query_vec, x)
+    )
+
+    results = df.sort_values(by='similarity', ascending=False).head(top_k)
+    return results
 
 # Report the results for search(‘oil price increase’, 5). Print the text of these 5 articles and judge if they indeed 
 # cover the topic you requested. Report articles for two more queries of your choice.
-
+def print_results(query, results):
+    for i, row in results.iterrows():
+        print(f"ID: {row['id']}")
+        print(f"Similarity: {row['similarity']:.4f}")
+        print(f"Text: {row['text'][:300]}...\n")
 
 # Main
 def main():
@@ -129,9 +156,20 @@ def main():
     model = train_word2vec(df['tokens'])
 
     # Make document into vectors
-
+    df['embedding'] = df['tokens'].apply(lambda t: document_embedding(t, model))
 
     # Report results
+    q1 = "oil price increase"
+    res1 = search(q1, 5, model, df)
+    print_results(q1, res1)
+
+    q2 = "stock market crash"
+    res2 = search(q2, 5, model, df)
+    print_results(q2, res2)
+
+    q3 = "interest rate rise"
+    res3 = search(q3, 5, model, df)
+    print_results(q3, res3)
 
 if __name__ == '__main__':
     main()
