@@ -1,0 +1,39 @@
+Week 2
+    Jessie
+    - song_lyrics.csv opgeschoond
+        - data ingeladen (alleen nodige kolommen: "title", "tag", "artist", "year", "lyrics", "language")
+        - year kolom nummeriek gemaakt
+        - alleen engelse nummers gehouden
+        - alleen muziek tussen 1973 en 2023 gehouden
+        - rijen waar genre mist was verwijderd
+        - rijen met missende waarden verwijderd
+        - clean_song_lyrics.csv opgeslagen
+    - gestart met scrapen van Billboard Hot 100
+        - eerste aanpak: wekelijkse charts scrapen, bleek te zwaar en inconsistent voor dataset-opbouw
+        - tweede aanpak: 1 januari snapshots per jaar, probleem: bias richting vroege-jaar releases, miste zomerhits
+        - uiteindelijke oplossing: gebruik van Billboard Year-End Hot 100 charts
+            - consistente dataset van ~100 nummers per jaar
+            - betere representatie van jaarlijkse populariteit
+            - resultaat opgeslagen als:
+            - billboard_year_end_1973_2023.csv
+    - checks uitgevoerd op Billboard dataset:
+            - geen missing values
+            - correcte year-distributie
+            - rank consistent (1–100)
+            - geen numerieke/onjuiste artiestvelden
+            - dataset gevalideerd als geschikt voor ML-doeleinden
+    
+    - AI:
+        - troubleshooten toen scrapen van artiesten niet lukte
+        - geholpen met een if statement zodat je niet perongeluk de dataa opnieuw download en opschoond (duurt lang namelijk)
+
+    Yvonne
+    - Preprocessing
+    - requirements.text
+    - train test split
+    - create models
+
+    - AI: 
+        - gebruikt om te laten zien wat je moet doen toen ik daar zelf niet uit kwam, daarna zelf gecodeerd
+        - helpen bij errors
+
