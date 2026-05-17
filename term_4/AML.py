@@ -3,6 +3,8 @@
 # Scrapes weekly Hot 100 charts from 8 years ago until 3 years ago
 # Goal: create dataset for NLP + ML hit prediction project
 
+# pip install -r requirements.txt
+
 import re
 import time
 import requests
