@@ -1,0 +1,29 @@
+Running preprocessing pipeline...
+Starting Kaggle dataset download...
+Dataset downloaded to cache: C:\Users\ynieu\.cache\kagglehub\datasets\carlosgdcj\genius-song-lyrics-with-language-information\versions\1
+CSV file found: C:\Users\ynieu\.cache\kagglehub\datasets\carlosgdcj\genius-song-lyrics-with-language-information\versions\1\song_lyrics.csv
+loading dataset...
+Data loaded!
+
+Cleaning data...
+Year converted
+Language filtered: (3374198, 6)
+Year filtered: (2803401, 6)
+Genre filtered: (2689321, 6)
+Missing values removed: (2689209, 6)
+
+=== MERGE RESULTAAT ===
+Genius rijen voor merge:        2689209
+Billboard unieke titel+artiest: 1611
+Genius rijen na merge:          1371
+Unieke nummers gematcht:        1003
+Match rate (billboard):         62.3%
+Saving cleaned dataset...
+Clean dataset saved.
+           title  tag       artist  year                                             lyrics language    title_clean artist_clean
+0        A Milli  rap    Lil Wayne  2008  [Intro]\nBangladesh\nYoung Money!\nYou dig?\nM...       en        a milli    lil wayne
+1  Run This Town  rap        JAY-Z  2009  [Produced by Kanye West & No I.D]\n\n[Intro: R...       en  run this town        jay-z
+2    We Fly High  rap    Jim Jones  2006  [Intro: Sample & Jim Jones]\nI wear a mean dar...       en    we fly high    jim jones
+3   Mrs. Officer  rap    Lil Wayne  2008  [Intro: Bobby Valentino & (Lil Wayne)]\nAyy\nA...       en    mrs officer    lil wayne
+4        BedRock  rap  Young Money  2009  [Refrain: Lloyd]\nI-I-I-I can make your bed ro...       en        bedrock  young money
+PS C:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\term_4> 
