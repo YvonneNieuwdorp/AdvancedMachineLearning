@@ -37,3 +37,11 @@ Week 2
         - gebruikt om te laten zien wat je moet doen toen ik daar zelf niet uit kwam, daarna zelf gecodeerd
         - helpen bij errors
 
+Week 3
+    Yvonne
+    - Cleanen clean_song_lyrics
+    - inspectie df bij ingeladen
+    - lineairSVC toegevoegd als model
+    - evaluatie
+    - top woorden
+    - lemmatization

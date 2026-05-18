@@ -19,7 +19,9 @@ from sklearn.metrics import (accuracy_score, classification_report, confusion_ma
 from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
 
-from nltk.corpus import stopwords
+from nltk.corpus import stopwords, wordnet
+from nltk.stem import PorterStemmer, WordNetLemmatizer
+
 def explore_and_clean_data(df):
     print("dataset")
 
@@ -62,6 +64,7 @@ def preprocess_lyrics(df):
     nltk.download("stopwords")
 
     stop_words = stopwords.words("english")
+    lemmatizer = WordNetLemmatizer()
 
     # Remove missing lyrics
     df = df.dropna(subset=["lyrics", "tag"])
@@ -79,6 +82,8 @@ def preprocess_lyrics(df):
     df["clean_lyrics"] = df["clean_lyrics"].apply(lambda x: x.split())
     # Remove stopwords
     df["clean_lyrics"] = df["clean_lyrics"].apply(lambda tokens: [t for t in tokens if t not in stop_words])
+    # Lemmatization
+    df["clean_lyrics"] = df["clean_lyrics"].apply(lambda tokens: [lemmatizer.lemmatize(t) for t in tokens])
     # Back to string
     df["clean_lyrics"] = df["clean_lyrics"].apply(lambda tokens: " ".join(tokens))
 
@@ -159,7 +164,7 @@ def evaluation(X_test, y_test, log_model, nb_model, svm_model):
     print(confusion_matrix(y_test, svm_pred))
 
 
-def show_top_words(model, n=5): 
+def show_top_words(model, n=3): 
     feature_names = model.named_steps["vectorizer"].get_feature_names_out()
     coefficients = model.named_steps["model"].coef_
     classes = model.named_steps["model"].classes_
