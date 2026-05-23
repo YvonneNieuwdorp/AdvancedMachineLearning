@@ -45,3 +45,12 @@ Week 3
     - evaluatie
     - top woorden
     - lemmatization
+
+    Jessie
+    - visualisaties aan evaluatie toegevoegd
+    - Docstrings en datatypes toegevoegd aan functies
+    - Overzichtelijke file tree gemaakt met gitignore en alvast een readme file
+
+    - AI:
+        - Overzichtelijke file tree laten genereren die ik vervolgens heb overgenomen de code functies zelf op de goede plaats gezet met de juiste imports
+        - README.md laten genereren, zelf nagekeken of deze correct was
