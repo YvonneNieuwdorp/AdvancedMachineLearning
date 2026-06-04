@@ -54,3 +54,23 @@ Week 3
     - AI:
         - Overzichtelijke file tree laten genereren die ik vervolgens heb overgenomen de code functies zelf op de goede plaats gezet met de juiste imports
         - README.md laten genereren, zelf nagekeken of deze correct was
+
+Week 4
+    Jessie
+    - hit_prediction.py toegevoegd
+        - build_hit_dataset()
+        - split_hit_data()
+        - create_hit_models()
+        - _compute_sample_weights()
+        - _save_confusion_matrix()
+        - _plot_hit_model_comparison()
+        - evaluate_hit_models()
+        - show_top_hit_words(model: Pipeline, n: int = 15)
+        - predict_hit(lyrics: str, model: Pipeline)
+        - run_hit_prediction_pipeline()
+    - functionaliteit geimplementeerd in main.py
+
+    - AI:
+        - Geholpen met een error oplossen toen title_clean/artist_clean nog niet aanwezig waren inbillboard, deze worden nu gecheckt en als ze niet aanwezig 
+          zijn aangemaakt op dezelfde manier als elders in het script.
+        - Docstrings en comments laten toevoegen
