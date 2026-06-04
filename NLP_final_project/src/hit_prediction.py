@@ -2,23 +2,32 @@
 hit_prediction.py
 -----------------
 Predicts how well a song charted on the Billboard Year-End Hot 100
-based on its lyrics alone, as a 3-class classification problem.
+based on its lyrics alone, as a 2-class classification problem.
 
 Labels assigned via a left join between the Genius lyrics dataset and
 the scraped Billboard chart data (2003-2023):
     "top_10" : song appeared in the Top 10 at least once
     "top_100": song appeared in the chart but never reached the Top 10
-    "none"   : song not found in the Billboard dataset at all
+
+The "none" class (songs not on Billboard) is excluded because
+clean_song_lyrics.csv was already built via an inner join on Billboard,
+meaning there are no genuine non-charting songs in the dataset.
+
+Features used:
+    - TF-IDF on preprocessed lyrics (unigrams + bigrams, 10k features)
+    - 5 numerical features: vocab_richness, avg_word_len, word_count,
+      sentiment, rhyme_density
 
 Pipeline steps:
     1. Left-join lyrics CSV with Billboard CSV on title_clean + artist_clean
-    2. Assign 3-class chart_label from the merged top_10 column
-    3. Reuse NLP preprocessing pipeline from preprocessing.py
-    4. Stratified 80/20 train/test split
-    5. Train Logistic Regression, Naive Bayes, and LinearSVC
-    6. Evaluate with per-class precision/recall/F1 and macro F1
-    7. Save confusion matrices + model comparison chart
-    8. Print top discriminating words per class
+    2. Assign 2-class chart_label from the merged top_10 column
+    3. Add numerical lyric features via feature_engineering.py
+    4. Reuse NLP preprocessing pipeline from preprocessing.py
+    5. Stratified 80/20 train/test split
+    6. Train Logistic Regression, Naive Bayes, and LinearSVC
+    7. Evaluate with per-class precision/recall/F1 and macro F1
+    8. Save confusion matrices + model comparison chart
+    9. Print top discriminating words per class
 
 Can be run standalone:
     python src/hit_prediction.py
@@ -32,14 +41,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, confusion_matrix, f1_score
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.pipeline import Pipeline
+from sklearn.pipeline import FeatureUnion, Pipeline
+from sklearn.preprocessing import StandardScaler
 from sklearn.svm import LinearSVC
 
+from feature_engineering import add_lyric_features, NUMERIC_FEATURES
 from preprocessing import explore_and_clean_data, preprocess_lyrics
 
 BASE_DIR       = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -47,48 +59,74 @@ BILLBOARD_PATH = os.path.join(BASE_DIR, "data", "billboard_year_end_2003_2023.cs
 LYRIC_PATH     = os.path.join(BASE_DIR, "data", "clean_song_lyrics.csv")
 OUTPUT_DIR     = os.path.join(BASE_DIR, "outputs")
 
-# Ordered from least to most successful: used consistently for all outputs
-CLASS_ORDER = ["none", "top_100", "top_10"]
+# 2-class setup: top_10 vs top_100
+CLASS_ORDER = ["top_100", "top_10"]
 
 
-# Step 1: Merge and label
+# ── Sklearn transformer helpers ───────────────────────────────────────────────
+
+class ColumnSelector(BaseEstimator, TransformerMixin):
+    """Selects a single column from a DataFrame and returns it as a Series."""
+
+    def __init__(self, column: str) -> None:
+        self.column = column
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        return X[self.column]
+
+
+class NumericFeatureSelector(BaseEstimator, TransformerMixin):
+    """Selects numeric feature columns from a DataFrame as a numpy array."""
+
+    def __init__(self, columns: list[str]) -> None:
+        self.columns = columns
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        return X[self.columns].values
+
+
+# ── Step 1: Merge and label ───────────────────────────────────────────────────
 
 def build_hit_dataset(
     lyrics_path: str = LYRIC_PATH,
     billboard_path: str = BILLBOARD_PATH,
 ) -> pd.DataFrame:
     """
-    Merges the lyrics CSV with the Billboard CSV to attach a 3-class
-    chart_label to every song.
+    Merges the lyrics CSV with the Billboard CSV to attach a 2-class
+    chart_label to every song, then adds numerical lyric features.
 
     Matching is performed on title_clean + artist_clean. The Billboard CSV
-    is first deduplicated so each unique song contributes one row (taking the
-    maximum top_10 value across years: a song counts as top_10 if it ever
-    reached that threshold). A left join is then used so that songs present
-    in the lyrics dataset but absent from Billboard receive the label "none",
-    representing songs that never charted in the Hot 100 at all.
+    is deduplicated so each unique song contributes one row (taking the
+    maximum top_10 value across years). A left join is used, and songs
+    with no Billboard match (label "none") are dropped because the lyrics
+    CSV was originally built via an inner join on Billboard — there are no
+    genuine non-charting songs in the dataset.
 
     Label assignment:
         "top_10" : matched in Billboard and top_10 == 1
         "top_100": matched in Billboard and top_10 == 0
-        "none"   : no Billboard match found
 
-    If title_clean / artist_clean columns are absent from the Billboard CSV
-    (i.e. the raw scraped file is used rather than the cleaned one), they are
-    derived on the fly using the same normalisation functions from cleaning.py.
+    Numerical features added (from feature_engineering.py):
+        vocab_richness, avg_word_len, word_count, sentiment, rhyme_density
 
     Args:
         lyrics_path:    Path to clean_song_lyrics.csv.
         billboard_path: Path to billboard_year_end_2003_2023.csv.
 
     Returns:
-        DataFrame containing all lyrics columns plus a new 'chart_label'
-        column with values in {"none", "top_100", "top_10"}.
+        DataFrame containing all lyrics columns, a 'chart_label' column,
+        and 5 numerical feature columns.
     """
-    lyrics_df = pd.read_csv(lyrics_path)
+    lyrics_df    = pd.read_csv(lyrics_path)
     billboard_df = pd.read_csv(billboard_path)
 
-    print(f"Lyrics CSV: {lyrics_df.shape[0]} rows")
+    print(f"Lyrics CSV:    {lyrics_df.shape[0]} rows")
     print(f"Billboard CSV: {billboard_df.shape[0]} rows")
 
     # Derive normalised join keys if the raw scraped CSV is used
@@ -105,20 +143,24 @@ def build_hit_dataset(
     )
     print(f"Unique Billboard songs (after deduplication): {len(billboard_dedup)}")
 
-    # Left join: unmatched lyrics rows receive None in the top_10 column
+    # Left join: unmatched rows receive NaN in top_10
     merged = lyrics_df.merge(
         billboard_dedup[["title_clean", "artist_clean", "top_10"]],
         on=["title_clean", "artist_clean"],
         how="left",
     )
 
-    # Assign the 3-class label
+    # Assign labels, then drop "none" (no genuine non-charting songs exist)
     def _assign_label(top_10_val: float) -> str:
         if pd.isna(top_10_val):
             return "none"
         return "top_10" if int(top_10_val) == 1 else "top_100"
 
     merged["chart_label"] = merged["top_10"].apply(_assign_label)
+
+    before = len(merged)
+    merged = merged[merged["chart_label"] != "none"].copy()
+    print(f"\nDropped {before - len(merged)} 'none' rows (no genuine non-charting songs)")
 
     print(f"\nMERGE RESULTS")
     print(f"Total rows: {len(merged)}")
@@ -128,77 +170,94 @@ def build_hit_dataset(
         f"{merged['chart_label'].value_counts(normalize=True).mul(100).round(1)}"
     )
 
+    # Add numerical lyric features (computed on raw lyrics before NLP cleaning)
+    print("\nAdding numerical lyric features...")
+    merged = add_lyric_features(merged, lyrics_col="lyrics")
+    print(f"Features added: {NUMERIC_FEATURES}")
+
     return merged
 
 
-# Step 2: Train / test split
+# ── Step 2: Train / test split ────────────────────────────────────────────────
 
 def split_hit_data(
     df: pd.DataFrame,
     test_size: float = 0.2,
     random_state: int = 42,
-) -> tuple[pd.Series, pd.Series, pd.Series, pd.Series]:
+) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
     """
     Performs a stratified 80/20 train/test split on the chart_label column.
 
-    Stratification ensures all three classes are proportionally represented
-    in both sets, which is especially important given the natural imbalance
-    between "top_10" (~10% of charted songs) and the other classes.
+    X is a DataFrame containing both 'clean_lyrics' (for TF-IDF) and the
+    5 numerical feature columns (for the numeric branch of the pipeline).
+    Naive Bayes only uses the 'clean_lyrics' column; LogReg and SVM use all.
 
     Args:
-        df:           Preprocessed DataFrame with 'clean_lyrics' and
-                      'chart_label' columns.
+        df:           Preprocessed DataFrame with 'clean_lyrics', the 5
+                      numerical feature columns, and 'chart_label'.
         test_size:    Fraction of data reserved for testing. Defaults to 0.2.
         random_state: Random seed for reproducibility. Defaults to 42.
 
     Returns:
-        Tuple of (X_train, X_test, y_train, y_test) as pandas Series.
+        Tuple of (X_train, X_test, y_train, y_test).
+        X_train / X_test are DataFrames; y_train / y_test are Series.
     """
-    X = df["clean_lyrics"]
+    feature_cols = ["clean_lyrics"] + NUMERIC_FEATURES
+    X = df[feature_cols]
     y = df["chart_label"]
     return train_test_split(X, y, test_size=test_size, random_state=random_state, stratify=y)
 
 
-# Step 3: Model definitions
+# ── Step 3: Model definitions ─────────────────────────────────────────────────
 
 def create_hit_models() -> tuple[Pipeline, Pipeline, Pipeline]:
     """
-    Creates three multi-class classification pipelines, each combining a
-    TF-IDF vectoriser with a different classifier.
+    Creates three multi-class classification pipelines.
 
-    Each pipeline uses unigrams and bigrams with a vocabulary capped at
-    10,000 features. class_weight='balanced' is applied where the classifier
-    supports it, compensating for the unequal class frequencies without
-    requiring manual resampling.
+    Logistic Regression and LinearSVC use a FeatureUnion that combines:
+        - TF-IDF on 'clean_lyrics' (sparse, 10k features, unigrams+bigrams)
+        - StandardScaled numerical features (vocab_richness, avg_word_len,
+          word_count, sentiment, rhyme_density)
 
-    Models:
-        - Logistic Regression (balanced class weights, max 1000 iterations)
-        - Multinomial Naive Bayes (no native class_weight; compensated via
-          sample_weight at fit time inside evaluate_hit_models)
-        - LinearSVC (balanced class weights, max 2000 iterations)
+    Multinomial Naive Bayes only uses TF-IDF on 'clean_lyrics' because
+    StandardScaler can produce negative values, which MultinomialNB does
+    not support.
+
+    class_weight='balanced' is applied to LogReg and LinearSVC to compensate
+    for the ~10% / ~90% split between top_10 and top_100. Naive Bayes uses
+    per-sample weights passed at fit time in evaluate_hit_models().
 
     Returns:
         Tuple of (log_pipeline, nb_pipeline, svm_pipeline), all unfitted.
     """
-    def tfidf() -> TfidfVectorizer:
-        return TfidfVectorizer(max_features=10000, ngram_range=(1, 2))
+    def combined_features() -> FeatureUnion:
+        return FeatureUnion([
+            ("tfidf", Pipeline([
+                ("selector",   ColumnSelector("clean_lyrics")),
+                ("vectorizer", TfidfVectorizer(max_features=10000, ngram_range=(1, 2))),
+            ])),
+            ("numeric", Pipeline([
+                ("selector", NumericFeatureSelector(NUMERIC_FEATURES)),
+                ("scaler",   StandardScaler()),
+            ])),
+        ])
 
     log_pipeline = Pipeline([
-        ("vectorizer", tfidf()),
+        ("features", combined_features()),
         ("model", LogisticRegression(
             max_iter=1000, class_weight="balanced", random_state=42
         )),
     ])
 
+    # Naive Bayes: TF-IDF only (no negative values allowed)
     nb_pipeline = Pipeline([
-        ("vectorizer", tfidf()),
-        # MultinomialNB has no class_weight parameter; imbalance is handled
-        # via per-sample weights passed at fit time in evaluate_hit_models().
-        ("model", MultinomialNB()),
+        ("selector",   ColumnSelector("clean_lyrics")),
+        ("vectorizer", TfidfVectorizer(max_features=10000, ngram_range=(1, 2))),
+        ("model",      MultinomialNB()),
     ])
 
     svm_pipeline = Pipeline([
-        ("vectorizer", tfidf()),
+        ("features", combined_features()),
         ("model", LinearSVC(
             class_weight="balanced", random_state=42, max_iter=2000
         )),
@@ -207,7 +266,7 @@ def create_hit_models() -> tuple[Pipeline, Pipeline, Pipeline]:
     return log_pipeline, nb_pipeline, svm_pipeline
 
 
-# Step 4: Helpers
+# ── Step 4: Helpers ───────────────────────────────────────────────────────────
 
 def _compute_sample_weights(y: pd.Series) -> np.ndarray:
     """
@@ -238,9 +297,6 @@ def _save_confusion_matrix(
     """
     Saves a labelled confusion matrix heatmap as a PNG file.
 
-    The matrix rows and columns follow CLASS_ORDER so the layout is
-    consistent across all three models.
-
     Args:
         y_test:      True chart_label values for the test set.
         pred:        Predicted chart_label values.
@@ -248,7 +304,7 @@ def _save_confusion_matrix(
         output_dir:  Directory to save the PNG.
     """
     cm  = confusion_matrix(y_test, pred, labels=CLASS_ORDER)
-    fig, ax = plt.subplots(figsize=(7, 5))
+    fig, ax = plt.subplots(figsize=(6, 4))
     sns.heatmap(
         cm, annot=True, fmt="d", cmap="Blues",
         xticklabels=CLASS_ORDER, yticklabels=CLASS_ORDER, ax=ax,
@@ -274,24 +330,21 @@ def _plot_hit_model_comparison(
     across all three models.
 
     Args:
-        results:    Dict of {model_name: {metric_name: float}} as returned
-                    by evaluate_hit_models().
+        results:    Dict of {model_name: {metric_name: float}}.
         output_dir: Directory to save the PNG.
     """
-    names        = list(results.keys())
-    macro_f1     = [results[n]["macro_f1"]    for n in names]
-    f1_top10     = [results[n]["f1_top_10"]   for n in names]
-    f1_top100    = [results[n]["f1_top_100"]  for n in names]
-    f1_none      = [results[n]["f1_none"]     for n in names]
+    names     = list(results.keys())
+    macro_f1  = [results[n]["macro_f1"]   for n in names]
+    f1_top10  = [results[n]["f1_top_10"]  for n in names]
+    f1_top100 = [results[n]["f1_top_100"] for n in names]
 
     x     = np.arange(len(names))
-    width = 0.2
+    width = 0.25
 
-    fig, ax = plt.subplots(figsize=(11, 5))
-    b1 = ax.bar(x - 1.5 * width, macro_f1,  width, label="Macro F1",        color="#4C8BE2")
-    b2 = ax.bar(x - 0.5 * width, f1_top10,  width, label="F1 (top_10)",     color="#E2714C")
-    b3 = ax.bar(x + 0.5 * width, f1_top100, width, label="F1 (top_100)",    color="#4CBE82")
-    b4 = ax.bar(x + 1.5 * width, f1_none,   width, label="F1 (none)",       color="#BE4C82")
+    fig, ax = plt.subplots(figsize=(9, 5))
+    b1 = ax.bar(x - width, macro_f1,  width, label="Macro F1",     color="#4C8BE2")
+    b2 = ax.bar(x,         f1_top10,  width, label="F1 (top_10)",  color="#E2714C")
+    b3 = ax.bar(x + width, f1_top100, width, label="F1 (top_100)", color="#4CBE82")
 
     ax.set_xticks(x)
     ax.set_xticklabels(names)
@@ -299,8 +352,8 @@ def _plot_hit_model_comparison(
     ax.set_ylabel("Score")
     ax.set_title("Chart Position Prediction: Model Comparison")
     ax.legend()
-    for bars in (b1, b2, b3, b4):
-        ax.bar_label(bars, fmt="%.2f", padding=3, fontsize=7)
+    for bars in (b1, b2, b3):
+        ax.bar_label(bars, fmt="%.2f", padding=3, fontsize=8)
 
     plt.tight_layout()
     out_path = os.path.join(output_dir, "hit_model_comparison.png")
@@ -309,11 +362,11 @@ def _plot_hit_model_comparison(
     print(f"Model comparison chart saved -> {out_path}")
 
 
-# Step 5: Evaluation
+# ── Step 5: Evaluation ────────────────────────────────────────────────────────
 
 def evaluate_hit_models(
-    X_train: pd.Series,
-    X_test: pd.Series,
+    X_train: pd.DataFrame,
+    X_test: pd.DataFrame,
     y_train: pd.Series,
     y_test: pd.Series,
     log_model: Pipeline,
@@ -325,14 +378,13 @@ def evaluate_hit_models(
     Fits all three models, evaluates them on the test set, and saves
     visualisations to output_dir.
 
-    Naive Bayes is fitted with per-sample weights (derived from training
-    label frequencies) to compensate for its lack of a class_weight
-    parameter. Logistic Regression and LinearSVC use class_weight='balanced'
-    set at construction time.
+    Naive Bayes receives only the 'clean_lyrics' column and is fitted with
+    per-sample weights to compensate for its lack of class_weight support.
+    Logistic Regression and LinearSVC receive the full feature DataFrame
+    (TF-IDF + numerical features via FeatureUnion).
 
     For each model the following are printed to stdout:
-        - Per-class precision, recall, and F1
-        - Macro F1 across all three classes
+        - Macro F1 and per-class F1, precision, recall
         - Full sklearn classification report
 
     Saved to output_dir:
@@ -340,8 +392,8 @@ def evaluate_hit_models(
         - hit_model_comparison.png          (grouped bar chart)
 
     Args:
-        X_train:    Training lyrics (preprocessed strings).
-        X_test:     Test lyrics (preprocessed strings).
+        X_train:    Training feature DataFrame (clean_lyrics + numeric cols).
+        X_test:     Test feature DataFrame.
         y_train:    Training chart_label values.
         y_test:     Test chart_label values.
         log_model:  Unfitted Logistic Regression pipeline.
@@ -351,27 +403,27 @@ def evaluate_hit_models(
 
     Returns:
         Dict of {model_name: {"macro_f1": float, "f1_top_10": float,
-        "f1_top_100": float, "f1_none": float, "precision_top_10": float,
+        "f1_top_100": float, "precision_top_10": float,
         "recall_top_10": float}}.
     """
     os.makedirs(output_dir, exist_ok=True)
 
-    # Fit models: Naive Bayes needs explicit sample weights
+    # Naive Bayes uses only clean_lyrics; LogReg + SVM use the full DataFrame
     sample_weights = _compute_sample_weights(y_train)
     log_model.fit(X_train, y_train)
-    nb_model.fit(X_train, y_train, model__sample_weight=sample_weights)
+    nb_model.fit(X_train[["clean_lyrics"]], y_train, model__sample_weight=sample_weights)
     svm_model.fit(X_train, y_train)
 
     models = {
-        "Logistic Regression": log_model,
-        "Naive Bayes":         nb_model,
-        "LinearSVC":           svm_model,
+        "Logistic Regression": (log_model, X_test),
+        "Naive Bayes":         (nb_model,  X_test[["clean_lyrics"]]),
+        "LinearSVC":           (svm_model, X_test),
     }
 
     results: dict[str, dict[str, float]] = {}
 
-    for name, model in models.items():
-        pred   = model.predict(X_test)
+    for name, (model, X_input) in models.items():
+        pred   = model.predict(X_input)
         report = classification_report(
             y_test, pred,
             labels=CLASS_ORDER,
@@ -379,31 +431,28 @@ def evaluate_hit_models(
             zero_division=0,
         )
 
-        macro_f1     = f1_score(y_test, pred, average="macro",    zero_division=0)
+        macro_f1     = f1_score(y_test, pred, average="macro", zero_division=0)
         f1_top10     = report["top_10"]["f1-score"]
         f1_top100    = report["top_100"]["f1-score"]
-        f1_none      = report["none"]["f1-score"]
         prec_top10   = report["top_10"]["precision"]
         recall_top10 = report["top_10"]["recall"]
 
         results[name] = {
-            "macro_f1":        macro_f1,
-            "f1_top_10":       f1_top10,
-            "f1_top_100":      f1_top100,
-            "f1_none":         f1_none,
+            "macro_f1":         macro_f1,
+            "f1_top_10":        f1_top10,
+            "f1_top_100":       f1_top100,
             "precision_top_10": prec_top10,
-            "recall_top_10":   recall_top10,
+            "recall_top_10":    recall_top10,
         }
 
         print(f"\n{'=' * 45}")
         print(f"  {name}")
         print(f"{'=' * 45}")
         print(f"  Macro F1:                    {macro_f1:.4f}")
-        print(f"  F1 : top_10:               {f1_top10:.4f}")
-        print(f"  F1 : top_100:              {f1_top100:.4f}")
-        print(f"  F1 : none:                 {f1_none:.4f}")
-        print(f"  Precision (top_10 class):   {prec_top10:.4f}")
-        print(f"  Recall    (top_10 class):   {recall_top10:.4f}")
+        print(f"  F1  (top_10):                {f1_top10:.4f}")
+        print(f"  F1  (top_100):               {f1_top100:.4f}")
+        print(f"  Precision (top_10):          {prec_top10:.4f}")
+        print(f"  Recall    (top_10):          {recall_top10:.4f}")
         print(f"\nFull classification report:")
         print(classification_report(
             y_test, pred,
@@ -414,90 +463,114 @@ def evaluate_hit_models(
         _save_confusion_matrix(y_test, pred, name, output_dir)
 
     _plot_hit_model_comparison(results, output_dir)
-
     return results
 
 
-# Step 6: Interpretability
-
+# ── Step 6: Interpretability ──────────────────────────────────────────────────
 def show_top_hit_words(model: Pipeline, n: int = 15) -> None:
-    """
-    Prints the n words most strongly associated with each chart class for
-    a LinearSVC or Logistic Regression model.
+    feature_union  = model.named_steps["features"]
+    tfidf_pipeline = dict(feature_union.transformer_list)["tfidf"]
+    vectorizer     = tfidf_pipeline.named_steps["vectorizer"]
 
-    For multi-class LinearSVC, coef_ has shape (n_classes, n_features) with
-    one coefficient vector per class. The top-n features by coefficient
-    magnitude are the words most predictive of that class.
+    tfidf_names   = vectorizer.get_feature_names_out()
+    numeric_names = np.array(NUMERIC_FEATURES)
+    feature_names = np.concatenate([tfidf_names, numeric_names])
 
-    Args:
-        model: Fitted sklearn Pipeline containing 'vectorizer' and 'model'
-               steps. The model step must expose a coef_ attribute
-               (LinearSVC or Logistic Regression).
-        n:     Number of top words to display per class. Defaults to 15.
-    """
-    feature_names = model.named_steps["vectorizer"].get_feature_names_out()
-    coef          = model.named_steps["model"].coef_
-    classes       = model.named_steps["model"].classes_
+    coef    = model.named_steps["model"].coef_
+    classes = model.named_steps["model"].classes_
 
-    print("\nTOP WORDS PER CHART CLASS")
-    for i, label in enumerate(classes):
-        print(f"\n {label.upper()} ")
-        top_idx = coef[i].argsort()[-n:][::-1]
+    print("\nTOP WORDS PER CHART CLASS (LinearSVC)")
+
+    # Binaire classificatie: coef_ heeft maar 1 rij
+    # Positieve waarden -> classes[1] (top_10)
+    # Negatieve waarden -> classes[0] (top_100)
+    if coef.shape[0] == 1:
+        coef_row = coef[0]
+
+        print(f"\n  {classes[1].upper()} (hoogste positieve coëfficiënten)")
+        top_idx = coef_row.argsort()[-n:][::-1]
         for idx in top_idx:
-            print(f"  {feature_names[idx]:<25} coef={coef[i][idx]:.4f}")
+            name = feature_names[idx] if idx < len(feature_names) else f"feature_{idx}"
+            print(f"    {name:<30} coef={coef_row[idx]:.4f}")
 
+        print(f"\n  {classes[0].upper()} (hoogste negatieve coëfficiënten)")
+        bot_idx = coef_row.argsort()[:n]
+        for idx in bot_idx:
+            name = feature_names[idx] if idx < len(feature_names) else f"feature_{idx}"
+            print(f"    {name:<30} coef={coef_row[idx]:.4f}")
 
+    else:
+        # Multiclass: originele logica
+        for i, label in enumerate(classes):
+            print(f"\n  {label.upper()}")
+            top_idx = coef[i].argsort()[-n:][::-1]
+            for idx in top_idx:
+                name = feature_names[idx] if idx < len(feature_names) else f"feature_{idx}"
+                print(f"    {name:<30} coef={coef[i][idx]:.4f}")
 
-# Step 7: Single-song prediction
- 
+# ── Step 7: Single-song prediction ───────────────────────────────────────────
+
 def predict_hit(lyrics: str, model: Pipeline) -> tuple[str, dict[str, float] | None]:
     """
     Predicts the chart class for a single song given its raw lyrics.
 
-    Wraps the vectorisation and prediction steps so callers do not need to
-    interact with the pipeline directly.
+    Constructs a one-row DataFrame with placeholder numerical features set
+    to 0.0 so the FeatureUnion pipeline receives the expected input shape.
+    For production use, pass real numerical features via add_lyric_features().
 
     Args:
         lyrics: Raw, unprocessed song lyrics as a plain string.
-        model:  A fitted sklearn Pipeline (vectorizer + classifier).
+        model:  A fitted sklearn Pipeline (FeatureUnion + classifier, or
+                plain vectorizer + classifier for Naive Bayes).
 
     Returns:
         Tuple of (predicted_label, class_probabilities).
-        predicted_label is one of "none", "top_100", or "top_10".
+        predicted_label is one of "top_100" or "top_10".
         class_probabilities is a dict mapping each class to its probability,
         or None for models that do not support predict_proba (e.g. LinearSVC).
     """
-    label = str(model.predict([lyrics])[0])
+    from feature_engineering import add_lyric_features
+
+    # Build a one-row DataFrame with real numerical features
+    row = pd.DataFrame([{"lyrics": lyrics, "clean_lyrics": lyrics}])
+    row = add_lyric_features(row, lyrics_col="lyrics")
+
+    # Ensure all expected columns are present
+    for col in NUMERIC_FEATURES:
+        if col not in row.columns:
+            row[col] = 0.0
+
+    label = str(model.predict(row)[0])
     probs = None
     if hasattr(model, "predict_proba"):
-        raw   = model.predict_proba([lyrics])[0]
-        probs = dict(zip(model.classes_, raw))
+        raw_probs = model.predict_proba(row)[0]
+        classes   = model.named_steps["model"].classes_
+        probs     = dict(zip(classes, raw_probs))
     return label, probs
 
- 
-# Full standalone pipeline
- 
+
+# ── Full standalone pipeline ──────────────────────────────────────────────────
+
 def run_hit_prediction_pipeline() -> None:
     """
-    Runs the full 3-class chart position prediction pipeline end-to-end.
+    Runs the full 2-class chart position prediction pipeline end-to-end.
 
-    Executes all steps in order: dataset construction, preprocessing,
-    splitting, model training, evaluation, interpretability analysis, and
-    a short demo. Outputs (confusion matrices, comparison chart) are saved
-    to the outputs/ directory.
+    Executes all steps: dataset construction (with feature engineering),
+    NLP preprocessing, splitting, model training, evaluation,
+    interpretability analysis, and a short demo.
 
-    Can be called from main.py or run standalone via __main__.
+    Outputs (confusion matrices, comparison chart) are saved to outputs/.
     """
 
-    # Step 1: Build labelled dataset via left join
-    print("\n Step 1: Merging lyrics with Billboard labels")
+    # Step 1: Build labelled dataset with numerical features
+    print("\n Step 1: Merging lyrics with Billboard labels + adding features")
     df = build_hit_dataset()
 
     # Step 2: Deduplicate
     print("\n Step 2: Deduplicating")
     df = explore_and_clean_data(df)
 
-    # Step 3: NLP preprocessing
+    # Step 3: NLP preprocessing (adds 'clean_lyrics' column)
     print("\n Step 3: Preprocessing lyrics")
     df = preprocess_lyrics(df)
 
@@ -529,17 +602,14 @@ def run_hit_prediction_pipeline() -> None:
         ("I used to pray for times like this, to rhyme like this, so long ago", "top_10"),
         ("We found love in a hopeless place, shining in the dark",              "top_10"),
         ("Hey mama, I know I act a fool but got your name tattooed on my arm",  "top_100"),
-        ("This is an obscure deep cut that never got radio play at all",        "none"),
+        ("Baby you light up my world like nobody else",                         "top_10"),
     ]
     for lyrics, true_label in demo_songs:
         label, probs = predict_hit(lyrics, svm_model)
-        probs_str = (
-            "  |  ".join(f"{k}: {v:.2f}" for k, v in probs.items())
-            if probs else "N/A"
-        )
         print(f"  Lyrics   : \"{lyrics[:55]}...\"")
         print(f"  Predicted: {label:<8}  |  Actual: {true_label}")
         if probs:
+            probs_str = "  |  ".join(f"{k}: {v:.2f}" for k, v in probs.items())
             print(f"  Probs    : {probs_str}")
         print()
 

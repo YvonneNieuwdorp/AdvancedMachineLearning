@@ -112,9 +112,9 @@ def download_and_clean_data() -> None:
     n_billboard_unique = billboard_df[["title_clean", "artist_clean"]].drop_duplicates().shape[0]
 
     df = df.merge(
-        billboard_df[["title_clean", "artist_clean"]],
+        billboard_df[["title_clean", "artist_clean", "rank", "top_10"]],
         on=["title_clean", "artist_clean"],
-        how="inner"
+        how="left"
     )
 
     n_unique_matched = df[["title_clean", "artist_clean"]].drop_duplicates().shape[0]

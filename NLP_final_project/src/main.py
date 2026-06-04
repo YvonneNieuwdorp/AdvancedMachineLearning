@@ -35,9 +35,9 @@ from hit_prediction import run_hit_prediction_pipeline
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Override flags here if you want to re-run data acquisition from main.py
-FORCE_SCRAPE         = True   # Set True to re-scrape Billboard data
-FORCE_PREPROCESSING  = True   # Set True to re-download and clean lyrics
-VALIDATE_BILLBOARD   = True   # Set True to print Billboard dataset checks
+FORCE_SCRAPE         = False   # Set True to re-scrape Billboard data
+FORCE_PREPROCESSING  = False   # Set True to re-download and clean lyrics
+VALIDATE_BILLBOARD   = False   # Set True to print Billboard dataset checks
 
 
 def main() -> None:
@@ -109,9 +109,9 @@ def main() -> None:
         print(f"  Lyrics : \"{lyrics[:50]}...\"")
         print(f"  Predicted: {prediction} | Actual: {true_label}\n")
         
-        # Step 10: Top-10 hit prediction
-        print("\n Step 10: Top-10 hit prediction")
-        run_hit_prediction_pipeline()
+    # Step 10: Top-10 hit prediction
+    print("\n Step 10: Top-10 hit prediction")
+    run_hit_prediction_pipeline()
 
 
 if __name__ == "__main__":
