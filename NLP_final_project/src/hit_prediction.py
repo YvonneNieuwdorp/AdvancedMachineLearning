@@ -45,12 +45,13 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import classification_report, confusion_matrix, f1_score
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, StratifiedKFold, cross_val_score
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.pipeline import FeatureUnion, Pipeline
+from sklearn.pipeline import FeatureUnion
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import LinearSVC
-
+from sklearn.ensemble import RandomForestClassifier
+from imblearn.pipeline import Pipeline
 from feature_engineering import add_lyric_features, NUMERIC_FEATURES
 from preprocessing import explore_and_clean_data, preprocess_lyrics
 
@@ -136,10 +137,12 @@ def build_hit_dataset(
         billboard_df["artist_clean"] = billboard_df["artist"].apply(clean_artist)
 
     # One row per unique song; top_10 = 1 if it ever reached the Top 10
+    billboard_df["top_25"] = (billboard_df["rank"] <= 25).astype(int)
     billboard_dedup = (
         billboard_df
-        .groupby(["title_clean", "artist_clean"], as_index=False)["top_10"]
+        .groupby(["title_clean", "artist_clean"], as_index=False)["top_25"]
         .max()
+        .rename(columns={"top_25": "top_10"})  # hergebruik dezelfde kolomnaam
     )
     print(f"Unique Billboard songs (after deduplication): {len(billboard_dedup)}")
 
@@ -228,7 +231,7 @@ def create_hit_models() -> tuple[Pipeline, Pipeline, Pipeline]:
     per-sample weights passed at fit time in evaluate_hit_models().
 
     Returns:
-        Tuple of (log_pipeline, nb_pipeline, svm_pipeline), all unfitted.
+        Tuple of (log_pipeline, rf_pipeline, svm_pipeline), all unfitted.
     """
     def combined_features() -> FeatureUnion:
         return FeatureUnion([
@@ -242,28 +245,25 @@ def create_hit_models() -> tuple[Pipeline, Pipeline, Pipeline]:
             ])),
         ])
 
+    
+    # Naive Bayes: TF-IDF only (no negative values allowed)
     log_pipeline = Pipeline([
         ("features", combined_features()),
-        ("model", LogisticRegression(
-            max_iter=1000, class_weight="balanced", random_state=42
-        )),
-    ])
-
-    # Naive Bayes: TF-IDF only (no negative values allowed)
-    nb_pipeline = Pipeline([
-        ("selector",   ColumnSelector("clean_lyrics")),
-        ("vectorizer", TfidfVectorizer(max_features=10000, ngram_range=(1, 2))),
-        ("model",      MultinomialNB()),
+        ("model", LogisticRegression(max_iter=1000, random_state=42, class_weight='balanced')),
     ])
 
     svm_pipeline = Pipeline([
         ("features", combined_features()),
-        ("model", LinearSVC(
-            class_weight="balanced", random_state=42, max_iter=2000
-        )),
+        ("model", LinearSVC(random_state=42, max_iter=2000)),
     ])
 
-    return log_pipeline, nb_pipeline, svm_pipeline
+    rf_pipeline = Pipeline([
+        ("features", combined_features()),
+        ("model", RandomForestClassifier(random_state=42, n_estimators=200, class_weight='balanced', n_jobs=-1)),
+    ])
+
+    
+    return log_pipeline, rf_pipeline, svm_pipeline
 
 
 # ── Step 4: Helpers ───────────────────────────────────────────────────────────
@@ -370,7 +370,7 @@ def evaluate_hit_models(
     y_train: pd.Series,
     y_test: pd.Series,
     log_model: Pipeline,
-    nb_model: Pipeline,
+    rf_model: Pipeline,
     svm_model: Pipeline,
     output_dir: str = OUTPUT_DIR,
 ) -> dict[str, dict[str, float]]:
@@ -397,7 +397,7 @@ def evaluate_hit_models(
         y_train:    Training chart_label values.
         y_test:     Test chart_label values.
         log_model:  Unfitted Logistic Regression pipeline.
-        nb_model:   Unfitted Naive Bayes pipeline.
+        rf_model:   Unfitted Random Forest pipeline.
         svm_model:  Unfitted LinearSVC pipeline.
         output_dir: Directory to save PNG outputs.
 
@@ -409,14 +409,13 @@ def evaluate_hit_models(
     os.makedirs(output_dir, exist_ok=True)
 
     # Naive Bayes uses only clean_lyrics; LogReg + SVM use the full DataFrame
-    sample_weights = _compute_sample_weights(y_train)
     log_model.fit(X_train, y_train)
-    nb_model.fit(X_train[["clean_lyrics"]], y_train, model__sample_weight=sample_weights)
+    rf_model.fit(X_train, y_train)
     svm_model.fit(X_train, y_train)
 
     models = {
         "Logistic Regression": (log_model, X_test),
-        "Naive Bayes":         (nb_model,  X_test[["clean_lyrics"]]),
+        "Random Forest":       (rf_model,  X_test),
         "LinearSVC":           (svm_model, X_test),
     }
 
@@ -583,14 +582,39 @@ def run_hit_prediction_pipeline() -> None:
 
     # Step 5: Create models
     print("\n Step 5: Creating models")
-    log_model, nb_model, svm_model = create_hit_models()
+    log_model, rf_model, svm_model = create_hit_models()
 
     # Step 6: Train and evaluate
     print("\n Step 6: Training and evaluating models")
     evaluate_hit_models(
         X_train, X_test, y_train, y_test,
-        log_model, nb_model, svm_model,
+        log_model, rf_model, svm_model,
     )
+
+    # Step 6b: Cross-validation
+    print("\n Step 6b: Cross-validation ")
+    cv = StratifiedKFold(n_splits = 5, shuffle=True, random_state = 42)
+    feature_cols = ["clean_lyrics"] + NUMERIC_FEATURES
+    
+    for name, model in [("Logistic Regression", log_model), ("Random Forest", rf_model), ("LinearSVC", svm_model)]:
+        scores = cross_val_score(
+            model,
+            df[feature_cols],
+            df["chart_label"],
+            cv=cv,
+            scoring="f1_macro"
+        )
+        print(f"  {name}: {scores.mean():.3f} ± {scores.std():.3f}")
+
+    # Random Forest apart omdat die alleen clean_lyrics gebruikt
+    rf_scores = cross_val_score(
+        rf_model,
+        df[feature_cols],
+        df["chart_label"],
+        cv=cv,
+        scoring="f1_macro"
+    )
+    print(f"  Random Forest: {rf_scores.mean():.3f} ± {rf_scores.std():.3f}")
 
     # Step 7: Interpretability
     print("\n Step 7: Top discriminating words per class (LinearSVC)")
