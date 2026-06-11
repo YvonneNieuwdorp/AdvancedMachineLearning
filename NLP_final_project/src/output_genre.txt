@@ -1,0 +1,397 @@
+Wat heb je je geleerd dit jaar? 
+
+Over wat je hebt moeten leren
+	- Makkelijk eten: stamppot, blauwe brinta, vegetarisch eten, slechte spaghetti die we aan het begin gekookt hebben, couscous van Sara
+		○ Daniel: hoe zijn jouw kookskills verbeterd? (Ik heb een keer nasi gekookt!)
+		○ Witte: Hoe vind je het om vegetarisch te eten? 
+		○ Lianne: Wat is het goorste wat je hebt gegeten? 	
+		○ Madelon: Wat is het lekkerste wat je hebt gegeten?  
+
+	
+	- Zingen: We zijn aan het afwassen. Een iemand begint te zingen. Niemand volgt. Iemand roept 'HARDER'.  afwassen en dan samen zingen (terwijl niemand wilt zingen), verenigingslied wat eerst als een cult voelde
+		○ Madelon: welk gevoel krijg je bij het zingen van het verenigingslied? (Het voelt als een cult)
+		○ Roeland: welk gevoel krijg je bij het zingen van het verenigingslied? (Ja ik vind het echt keigaaf)
+		○ Witte: Hoe gaat het zingen in het algemeen? (beetje lullen over praise and prayer, zingen met va, kooravond)
+		○ Daniel: Hoe gaat het afwassen? (het zingen gaat echt heel goed, ik vind het echt een leuk nummer)
+		○ Yvonne: Hoe gaat het afwassen? (die mannen doen echt niks)
+		
+	- Organiseren: stranddag organiseren in Zeeland, met te veel alcohol VA voorbereiden, VA organiseren waar iedereen ging schreeuwen omdat het fout ging met Via Fidhitster
+		○ Yvonne: Het plan was altijd om de dag na jaar alv naar het strand te gaan. 
+		○ Roeland: Welke snacks gaan er mee? (hoe gaan we 100 worstenbroodjes regelen?)
+		○ Madelon: Hoe ging het voorbereiden van de avond? (lekker gewijnd, witte die niet wist wat vine was)
+		○ Lianne: Hoe ging de avond zelf? (kritische deelnemers, snel mond gesnoerd)
+
+Eindshot dat we met zn allen zeggen dat we er veel van hebben geleerd of zoiets. 
+		
+		
+		
+		
+		
+		
+		
+
+
+Benoem een tafelpraeses
+Verzin een huisnaam
+Verzin een wapenspreuk
+Presenteer uzelf 
+
+Voeg minimaal 10 versieringen toe aan maskers van andere teams
+Laat een lid van een ander huis jullie wapenspreuk voordragen
+Schrijf een toost en draag deze voor (minimaal 30 seconden)
+Laat ieder huis een groepsfoto van jullie maken
+Overtuig een ander huis om een bondgenootschap met jullie af te sluiten
+Zorg voor een groepstoast
+Zorg ervoor dat het verenigingslied gezongen wordt
+Ga staan zodra een vrouw van tafel loopt (volhouden tot het einde)
+Maak een corsage met je huis
+Opdracht met rokkostuum/galajurk? 
+Vraag allemaal aan een andere tafelpraeses of je gebruik mag maken van het watercloset
+Overtuig een andere groep van een etiquette
+Laat ieder lid van een ander team uitleggen wat een rokkostuum is. 
+Roep drie keer luid hoorbaar uw groepsnaam
+Vertel aan ieder team minstens drie vadergrappen
+Roep driemaal 'Hoezee, hoezee, hoezee'
+Overtuig een ander huis dat het onbeleefd is om een masker met de linkerhand vast te houden
+Eindopdracht
+Presenteer je maskers met een driepuntenspeech
+Presenteer je leus van je huis
+Schrijf een vierregelig galagedicht
+
+
+
+
+
+
+
+Het Gemaskerd Bal der Huizen
+Spelregels
+Iedere groep kan een opdracht aanvragen op basis van punten. De punten zijn verdeeld in 2, 3 en 4 punten. 
+
+Denkt een huis een geheime opdracht van een ander huis te hebben ontdekt?
+Dan mogen zij dit melden bij de jury.
+	• Correct geraden: de raadgroep ontvangt de punten van de opdracht.
+	• Correct geraden: de uitvoerende groep ontvangt geen punten meer voor die opdracht.
+	• Onjuist geraden: -2 strafpunten.
+	
+Goed uitgevoerd? Dan kan je bij de jury komen en je punten indienen.
+
+Voorbereiding
+Ieder huis:
+	• Benoemt een tafelpraeses
+	• Verzin een huisnaam
+	• Presenteer uw huis aan de aanwezigen
+
+Puntentelling
+	• Laat een lid van een ander huis jullie wapenspreuk voordragen
+	• Zorg voor een groepstoast
+	• Laat ieder huis een groepsfoto van jullie maken
+	• Roep drie keer luid hoorbaar uw huisnaam
+	• Roep driemaal: "Hoezee, hoezee, hoezee!"
+	• Vertel aan ieder huis minstens drie vadergrappen
+	• Zorg dat ieder groepslid een compliment krijgt over zijn of haar masker
+	• Schrijf een toost en draag deze voor (minimaal 30 seconden)
+	• Maak een corsage namens jullie huis
+	• Vraag allemaal aan een andere tafelpraeses of je gebruik mag maken van het watercloset
+	• Laat ieder lid van een ander huis uitleggen wat een rokkostuum is
+	• Overtuig een andere groep van een etiquetteregel
+	• Overtuig een ander huis dat het onbeleefd is om een masker met de linkerhand vast te houden
+	• Voeg minimaal 5 versieringen toe aan maskers van andere huizen
+	• Overtuig een ander huis om een bondgenootschap met jullie af te sluiten
+	• Zorg ervoor dat het verenigingslied gezongen wordt
+	• Ga staan zodra een vrouw van tafel loopt voor 10 minuten
+
+Eindopdracht
+Ieder huis presenteert:
+	• De maskers van het huis
+	• De leus / wapenspreuk
+	• Een galagedicht van vier regels
+	• Een slotwoord van de tafelpraeses
+De jury kent hiervoor maximaal 10 punten toe.
+
+Van <https://chatgpt.com/c/6a2024f8-02f4-83eb-b80b-c80385d15f76> 
+
+Dit is denk ik voor nu een goed plan van aanpak:
+
+- Aparte files voor hit prediction en genre prediction pipelines, en dan een main.py die ze beide runt, zodat je ze ook apart kan runnen.
+- Aparte files voor data downloaden en cleanen, eentje voor hit prediction die lyric data merged met de billboard data, eentje voor genre prediction die alleen lyric data pakt uit een grotere date range dan hit prediction en alleen de kolommen met lyrics en genres pakt, zorg voor een uniforme distributie van genres in deze dataset.
+- Hugging face toepassen op de grotere dataset voor genre prediction.
+- Resultaten opslaan.
+
+4 september 10.00 uur op locatie
+
+PS C:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\NLP_final_project> & C:\Users\ynieu\AppData\Local\Programs\Python\Python313\python.exe "c:/Users/ynieu/OneDrive/Documenten/Toegepaste wiskunde/Advanced Machine Learning/AdvancedMachineLearning/NLP_final_project/src/genre_pipeline.py"
+
+ Step 1: Skipped (using existing c:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\NLP_final_project\data\clean_genre_lyrics.csv)
+
+ Step 2: Loading and preprocessing
+Loading cached preprocessed data...
+c:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\NLP_final_project\src\genre_pipeline.py:64: DeprecationWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.
+  .apply(lambda x: x.sample(min(len(x), max_samples // 5), random_state=random_state))
+
+ Step 3: Splitting data
+  Train: 6400  |  Test: 1600
+
+ Step 4: Training and evaluating sklearn models
+
+=============================================
+  Logistic Regression
+  Accuracy : 0.7056  |  Macro F1 : 0.7063
+              precision    recall  f1-score   support
+
+     country       0.70      0.71      0.70       400
+         rap       0.84      0.80      0.82       400
+          rb       0.64      0.62      0.63       400
+        rock       0.65      0.69      0.67       400
+
+    accuracy                           0.71      1600
+   macro avg       0.71      0.71      0.71      1600
+weighted avg       0.71      0.71      0.71      1600
+
+  Confusion matrix saved -> c:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\NLP_final_project\outputs\genre_confusion_matrix_logistic_regression.png
+
+=============================================
+  Naive Bayes
+  Accuracy : 0.6837  |  Macro F1 : 0.6836
+              precision    recall  f1-score   support
+
+     country       0.68      0.71      0.69       400
+         rap       0.79      0.79      0.79       400
+          rb       0.62      0.61      0.62       400
+        rock       0.65      0.62      0.64       400
+
+    accuracy                           0.68      1600
+   macro avg       0.68      0.68      0.68      1600
+weighted avg       0.68      0.68      0.68      1600
+
+  Confusion matrix saved -> c:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\NLP_final_project\outputs\genre_confusion_matrix_naive_bayes.png
+
+=============================================
+  LinearSVC
+  Accuracy : 0.6725  |  Macro F1 : 0.6730
+              precision    recall  f1-score   support
+
+     country       0.68      0.70      0.69       400
+         rap       0.81      0.77      0.79       400
+          rb       0.59      0.58      0.58       400
+        rock       0.62      0.64      0.63       400
+
+    accuracy                           0.67      1600
+   macro avg       0.67      0.67      0.67      1600
+weighted avg       0.67      0.67      0.67      1600
+
+  Confusion matrix saved -> c:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\NLP_final_project\outputs\genre_confusion_matrix_linearsvc.png
+Model comparison chart saved -> c:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\NLP_final_project\outputs\genre_model_comparison.png
+
+Results saved -> c:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\NLP_final_project\outputs\genre_results.json
+
+ Step 5: Top discriminating words
+
+TOP WORDS PER GENRE (LinearSVC)
+
+  country:
+    word__truck
+    word__yeah baby
+    word__bar
+    word__tree
+    word__road
+    word__little
+    word__use
+    word__ol
+    char__in 
+    word__old
+
+  rap:
+    word__fuck
+    word__flow
+    word__yall
+    word__fam
+    word__bitch
+    word__em
+    word__nigga
+    word__shit
+    word__beat
+    word__fuckin
+
+  rb:
+    word__oh
+    word__im
+    word__believed
+    word__know youll
+    word__wanna
+    word__verse
+    word__love
+    word__matter dont
+    word__lord know
+    word__deeper
+
+  rock:
+    word__know whats
+    word__getting harder
+    word__know im
+    word__thing said
+    word__skin
+    word__hole
+    word__magazine
+    word__im feeling
+    word__loser
+    word__time ll
+
+ Step 6: DistilBERT skipped (RUN_HF_MODEL=False)
+
+ Step 7: Demo predictions (LinearSVC)
+  Lyrics   : "I used to pray for times like this, to rhyme like this"
+  Predicted: rap  |  Actual: rap
+
+  Lyrics   : "We found love in a hopeless place, shining in the dark"
+  Predicted: country  |  Actual: pop
+
+  Lyrics   : "Pour some sugar on me, in the name of love"
+  Predicted: rock  |  Actual: rock
+
+Genre pipeline complete. Outputs saved to outputs/
+PS C:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\NLP_final_project> 
+
+Step 1: Skipped (using existing c:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\NLP_final_project\data\clean_hit_lyrics.csv)
+
+ Step 2: Loading dataset
+Loaded 2,803,618 rows from c:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\NLP_final_project\data\clean_hit_lyrics.csv
+Dropped 2802243 rows with no Billboard match
+
+Class distribution:
+chart_label
+top_100    1239
+top_10      136
+Name: count, dtype: int64
+
+Class balance (%):
+chart_label
+top_100    90.1
+top_10      9.9
+Name: proportion, dtype: float64
+
+Adding numerical lyric features...
+
+Genre distribution after preprocessing:
+tag
+unknown    500
+Name: count, dtype: int64
+
+ Step 4: Splitting data
+  Train: 400  |  Test: 100
+
+  Train distribution:
+chart_label
+top_100    358
+top_10      42
+
+  Test  distribution:
+chart_label
+top_100    89
+top_10     11
+
+ Step 5: Training and evaluating models
+
+=============================================
+  Logistic Regression
+  Macro F1: 0.5178  |  F1 top_10: 0.1176  |  F1 top_100: 0.9180
+              precision    recall  f1-score   support
+
+     top_100       0.89      0.94      0.92        89
+      top_10       0.17      0.09      0.12        11
+
+    accuracy                           0.85       100
+   macro avg       0.53      0.52      0.52       100
+weighted avg       0.81      0.85      0.83       100
+
+  Confusion matrix saved -> c:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\NLP_final_project\outputs\hit_confusion_matrix_logistic_regression.png
+
+=============================================
+  Random Forest
+  Macro F1: 0.5475  |  F1 top_10: 0.1538  |  F1 top_100: 0.9412
+              precision    recall  f1-score   support
+
+     top_100       0.90      0.99      0.94        89
+      top_10       0.50      0.09      0.15        11
+
+    accuracy                           0.89       100
+   macro avg       0.70      0.54      0.55       100
+weighted avg       0.85      0.89      0.85       100
+
+  Confusion matrix saved -> c:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\NLP_final_project\outputs\hit_confusion_matrix_random_forest.png
+
+=============================================
+  LinearSVC
+  Macro F1: 0.5315  |  F1 top_10: 0.1333  |  F1 top_100: 0.9297
+              precision    recall  f1-score   support
+
+     top_100       0.90      0.97      0.93        89
+      top_10       0.25      0.09      0.13        11
+
+    accuracy                           0.87       100
+   macro avg       0.57      0.53      0.53       100
+weighted avg       0.82      0.87      0.84       100
+
+  Confusion matrix saved -> c:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\NLP_final_project\outputs\hit_confusion_matrix_linearsvc.png
+Model comparison chart saved -> c:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\NLP_final_project\outputs\hit_model_comparison.png
+
+Results saved -> c:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\NLP_final_project\outputs\hit_results.json
+
+ Step 6: 5-fold cross-validation
+  Logistic Regression: 0.607 ± 0.066
+  Random Forest: 0.563 ± 0.072
+  LinearSVC: 0.563 ± 0.072
+
+ Step 7: Top discriminating features (LinearSVC)
+
+TOP FEATURES PER CHART CLASS (LinearSVC)
+
+  TOP_100 (highest positive coefficients)
+    wanna                          coef=0.3801
+    time                           coef=0.3601
+    youre youre                    coef=0.2975
+    right                          coef=0.2872
+    give                           coef=0.2791
+    keep                           coef=0.2718
+    aint                           coef=0.2567
+    move                           coef=0.2511
+    never                          coef=0.2479
+    shes                           coef=0.2426
+    thats                          coef=0.2395
+    woah                           coef=0.2366
+    better                         coef=0.2363
+    nigga                          coef=0.2291
+    looking                        coef=0.2263
+
+  TOP_10 (highest negative coefficients)
+    oh oh                          coef=-0.9874
+    dance                          coef=-0.8710
+    awe                            coef=-0.7956
+    panda                          coef=-0.7489
+    want got                       coef=-0.7385
+    head gone                      coef=-0.7265
+    bad day                        coef=-0.7221
+    oh                             coef=-0.7143
+    believer                       coef=-0.6942
+    ill ever                       coef=-0.6901
+    used know                      coef=-0.6792
+    ridin dirty                    coef=-0.6459
+    na na                          coef=-0.6454
+    catch ridin                    coef=-0.6332
+    na                             coef=-0.6187
+
+ Step 8: Demo predictions (LinearSVC)
+  Lyrics   : "I used to pray for times like this, to rhyme like this,..."
+  Predicted: top_100   |  Actual: top_25
+
+  Lyrics   : "We found love in a hopeless place, shining in the dark..."
+  Predicted: top_100   |  Actual: top_25
+
+  Lyrics   : "Hey mama, I know I act a fool but got your name tattooe..."
+  Predicted: top_100   |  Actual: top_100
+
+  Lyrics   : "Baby you light up my world like nobody else..."
+  Predicted: top_100   |  Actual: top_25
+
+Hit prediction pipeline complete. Outputs saved to outputs/
+PS C:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\NLP_final_project> 

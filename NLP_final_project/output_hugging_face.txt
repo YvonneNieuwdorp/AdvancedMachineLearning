@@ -1,0 +1,229 @@
+PS C:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\NLP_final_project> & C:\Users\ynieu\AppData\Local\Programs\Python\Python313\python.exe "c:/Users/ynieu/OneDrive/Documenten/Toegepaste wiskunde/Advanced Machine Learning/AdvancedMachineLearning/NLP_final_project/src/genre_pipeline.py"
+
+ Step 1: Skipped (using existing c:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\NLP_final_project\data\clean_genre_lyrics.csv)
+
+ Step 2: Loading and preprocessing
+Loading cached preprocessed data...
+c:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\NLP_final_project\src\genre_pipeline.py:64: DeprecationWarning: DataFrameGroupBy.apply operated on the grouping columns. This behavior is deprecated, and in a future version of pandas the grouping columns will be excluded from the operation. Either pass `include_groups=False` to exclude the groupings or explicitly select the grouping columns after groupby to silence this warning.
+  .apply(lambda x: x.sample(min(len(x), max_samples // 5), random_state=random_state))
+
+ Step 3: Splitting data
+  Train: 8000  |  Test: 2000
+
+ Step 4: Training and evaluating sklearn models
+
+=============================================
+  Logistic Regression
+  Accuracy : 0.5565  |  Macro F1 : 0.5494
+              precision    recall  f1-score   support
+
+     country       0.61      0.62      0.61       400
+         pop       0.31      0.24      0.27       400
+         rap       0.78      0.82      0.80       400
+          rb       0.54      0.58      0.56       400
+        rock       0.48      0.52      0.50       400
+
+    accuracy                           0.56      2000
+   macro avg       0.54      0.56      0.55      2000
+weighted avg       0.54      0.56      0.55      2000
+
+  Confusion matrix saved -> c:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\NLP_final_project\outputs\genre_confusion_matrix_logistic_regression.png
+
+=============================================
+  Naive Bayes
+  Accuracy : 0.5405  |  Macro F1 : 0.5266
+              precision    recall  f1-score   support
+
+     country       0.57      0.62      0.60       400
+         pop       0.32      0.20      0.25       400
+         rap       0.73      0.82      0.78       400
+          rb       0.50      0.57      0.53       400
+        rock       0.48      0.48      0.48       400
+
+    accuracy                           0.54      2000
+   macro avg       0.52      0.54      0.53      2000
+weighted avg       0.52      0.54      0.53      2000
+
+  Confusion matrix saved -> c:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\NLP_final_project\outputs\genre_confusion_matrix_naive_bayes.png
+
+=============================================
+  LinearSVC
+  Accuracy : 0.5155  |  Macro F1 : 0.5093
+              precision    recall  f1-score   support
+
+     country       0.59      0.60      0.59       400
+         pop       0.29      0.23      0.26       400
+         rap       0.74      0.79      0.76       400
+          rb       0.49      0.52      0.51       400
+        rock       0.42      0.43      0.43       400
+
+    accuracy                           0.52      2000
+   macro avg       0.50      0.52      0.51      2000
+weighted avg       0.50      0.52      0.51      2000
+
+  Confusion matrix saved -> c:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\NLP_final_project\outputs\genre_confusion_matrix_linearsvc.png
+Model comparison chart saved -> c:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\NLP_final_project\outputs\genre_model_comparison.png
+
+Results saved -> c:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\NLP_final_project\outputs\genre_results.json
+
+ Step 5: Top discriminating words
+
+TOP WORDS PER GENRE (LinearSVC)
+
+  country:
+    word__bar
+    word__truck
+    word__use
+    word__sits
+    word__day night
+    word__hed
+    word__old
+    word__little
+    word__ol
+    word__whiskey
+
+  pop:
+    word__struck
+    word__come close
+    word__dont try
+    word__gonna let
+    word__oooo
+    word__gonna ride
+    word__drive
+    word__break chain
+    word__looking
+    word__day life
+
+  rap:
+    word__shit
+    word__bitch
+    word__got
+    word__fuck
+    word__lean
+    word__like
+    word__nigga
+    word__bruh
+    word__ll love
+    word__fam
+
+  rb:
+    word__got lose
+    word__babe
+    word__lord know
+    word__journey
+    word__city light
+    word__ride ride
+    word__believed
+    word__oh
+    word__world love
+    word__glad
+
+  rock:
+    word__im asking
+    word__say really
+    word__rage
+    word__whack
+    word__save life
+    word__apart
+    word__wrong dont
+    word__paint
+    word__depth
+    word__till end
+
+ Step 6: Fine-tuning DistilBERT
+
+=== HUGGINGFACE DISTILBERT GENRE MODEL ===
+  Base model : distilbert-base-uncased
+  Epochs     : 3  |  Batch size: 16
+  Labels (5): ['country', 'pop', 'rap', 'rb', 'rock']
+  Tokenising train split...
+Map: 100%|█████████████| 4000/4000 [00:03<00:00, 1167.08 examples/s]
+  Tokenising test split...
+Map: 100%|█████████████| 1000/1000 [00:00<00:00, 1005.23 examples/s]
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+Loading weights: 100%|█| 100/100 [00:00<00:00, 1097.78it/s, Material
+DistilBertForSequenceClassification LOAD REPORT from: distilbert-base-uncased
+Key                     | Status     | 
+------------------------+------------+-
+vocab_transform.weight  | UNEXPECTED | 
+vocab_projector.bias    | UNEXPECTED | 
+vocab_layer_norm.bias   | UNEXPECTED | 
+vocab_transform.bias    | UNEXPECTED | 
+vocab_layer_norm.weight | UNEXPECTED | 
+pre_classifier.bias     | MISSING    | 
+pre_classifier.weight   | MISSING    | 
+classifier.weight       | MISSING    | 
+classifier.bias         | MISSING    | 
+
+Notes:
+- UNEXPECTED    :can be ignored when loading from different task/architecture; not ok if you expect identical arch.
+- MISSING       :those params were newly initialized because missing from the checkpoint. Consider training on your downstream task.
+`logging_dir` is deprecated and will be removed in v5.2. Please set `TENSORBOARD_LOGGING_DIR` instead.
+  Training...
+  0%|                                      | 0/1500 [00:00<?, ?it/s]C:\Users\ynieu\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\utils\data\dataloader.py:775: UserWarning: 'pin_memory' argument is set as true but no accelerator is found, then device pinned memory won't be used.
+  super().__init__(loader)
+{'loss': '1.554', 'grad_norm': '5.645', 'learning_rate': '4.837e-05', 'epoch': '0.1'}
+{'loss': '1.337', 'grad_norm': '4.496', 'learning_rate': '4.67e-05', 'epoch': '0.2'}
+{'loss': '1.277', 'grad_norm': '5.002', 'learning_rate': '4.503e-05', 'epoch': '0.3'}
+{'loss': '1.226', 'grad_norm': '5.956', 'learning_rate': '4.337e-05', 'epoch': '0.4'}
+{'loss': '1.12', 'grad_norm': '6.525', 'learning_rate': '4.17e-05', 'epoch': '0.5'}
+{'loss': '1.202', 'grad_norm': '13.53', 'learning_rate': '4.003e-05', 'epoch': '0.6'}
+{'loss': '1.149', 'grad_norm': '6.992', 'learning_rate': '3.837e-05', 'epoch': '0.7'}
+{'loss': '1.106', 'grad_norm': '4.063', 'learning_rate': '3.67e-05', 'epoch': '0.8'}
+{'loss': '1.173', 'grad_norm': '8.827', 'learning_rate': '3.503e-05', 'epoch': '0.9'}
+{'loss': '1.163', 'grad_norm': '4.795', 'learning_rate': '3.337e-05', 'epoch': '1'}
+{'eval_loss': '1.152', 'eval_accuracy': '0.528', 'eval_macro_f1': '0.52', 'eval_runtime': '59.25', 'eval_samples_per_second': '16.88', 'eval_steps_per_second': '1.063', 'epoch': '1'}
+Writing model shards: 100%|███████████| 1/1 [00:00<00:00,  2.10it/s]
+C:\Users\ynieu\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\utils\data\dataloader.py:775: UserWarning: 'pin_memory' argument is set as true but no accelerator is found, then device pinned memory won't be used.
+  super().__init__(loader)
+{'loss': '0.9729', 'grad_norm': '4.108', 'learning_rate': '3.17e-05', 'epoch': '1.1'}
+{'loss': '0.9388', 'grad_norm': '13.57', 'learning_rate': '3.003e-05', 'epoch': '1.2'}
+{'loss': '0.9311', 'grad_norm': '8.532', 'learning_rate': '2.837e-05', 'epoch': '1.3'}
+{'loss': '0.8963', 'grad_norm': '3.789', 'learning_rate': '2.67e-05', 'epoch': '1.4'}
+{'loss': '0.9683', 'grad_norm': '8.104', 'learning_rate': '2.503e-05', 'epoch': '1.5'}
+{'loss': '0.8773', 'grad_norm': '12.32', 'learning_rate': '2.337e-05', 'epoch': '1.6'}
+{'loss': '0.8146', 'grad_norm': '11.21', 'learning_rate': '2.17e-05', 'epoch': '1.7'}
+{'loss': '0.9115', 'grad_norm': '8.573', 'learning_rate': '2.003e-05', 'epoch': '1.8'}
+{'loss': '0.8846', 'grad_norm': '10.49', 'learning_rate': '1.837e-05', 'epoch': '1.9'}
+{'loss': '0.7326', 'grad_norm': '6.759', 'learning_rate': '1.67e-05', 'epoch': '2'}
+{'eval_loss': '1.085', 'eval_accuracy': '0.581', 'eval_macro_f1': '0.581', 'eval_runtime': '60.35', 'eval_samples_per_second': '16.57', 'eval_steps_per_second': '1.044', 'epoch': '2'}
+Writing model shards: 100%|███████████| 1/1 [00:00<00:00,  1.51it/s]
+C:\Users\ynieu\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\utils\data\dataloader.py:775: UserWarning: 'pin_memory' argument is set as true but no accelerator is found, then device pinned memory won't be used.
+  super().__init__(loader)
+{'loss': '0.5777', 'grad_norm': '23.48', 'learning_rate': '1.503e-05', 'epoch': '2.1'}
+{'loss': '0.5448', 'grad_norm': '25.36', 'learning_rate': '1.337e-05', 'epoch': '2.2'}
+{'loss': '0.6282', 'grad_norm': '9.85', 'learning_rate': '1.17e-05', 'epoch': '2.3'}
+{'loss': '0.5345', 'grad_norm': '14.68', 'learning_rate': '1.003e-05', 'epoch': '2.4'}
+{'loss': '0.599', 'grad_norm': '9.32', 'learning_rate': '8.367e-06', 'epoch': '2.5'}
+{'loss': '0.5978', 'grad_norm': '5.174', 'learning_rate': '6.7e-06', 'epoch': '2.6'}
+{'loss': '0.6098', 'grad_norm': '12.83', 'learning_rate': '5.033e-06', 'epoch': '2.7'}
+{'loss': '0.5351', 'grad_norm': '14.15', 'learning_rate': '3.367e-06', 'epoch': '2.8'}
+{'loss': '0.5844', 'grad_norm': '13.04', 'learning_rate': '1.7e-06', 'epoch': '2.9'}
+{'loss': '0.6067', 'grad_norm': '13.16', 'learning_rate': '3.333e-08', 'epoch': '3'}
+{'eval_loss': '1.189', 'eval_accuracy': '0.59', 'eval_macro_f1': '0.5852', 'eval_runtime': '59.93', 'eval_samples_per_second': '16.68', 'eval_steps_per_second': '1.051', 'epoch': '3'}
+Writing model shards: 100%|███████████| 1/1 [00:00<00:00,  1.88it/s]
+There were missing keys in the checkpoint model loaded: ['distilbert.embeddings.LayerNorm.weight', 'distilbert.embeddings.LayerNorm.bias'].
+There were unexpected keys in the checkpoint model loaded: ['distilbert.embeddings.LayerNorm.beta', 'distilbert.embeddings.LayerNorm.gamma'].
+{'train_runtime': '3439', 'train_samples_per_second': '3.489', 'train_steps_per_second': '0.436', 'train_loss': '0.9018', 'epoch': '3'}
+100%|███████████████████████████| 1500/1500 [57:18<00:00,  2.29s/it]
+  Evaluating...
+C:\Users\ynieu\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\utils\data\dataloader.py:775: UserWarning: 'pin_memory' argument is set as true but no accelerator is found, then device pinned memory won't be used.
+  super().__init__(loader)
+100%|███████████████████████████████| 63/63 [00:59<00:00,  1.06it/s]
+  Accuracy : 0.5900  |  Macro F1 : 0.5852
+Writing model shards: 100%|███████████| 1/1 [00:00<00:00,  2.37it/s]
+  Model saved -> c:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\NLP_final_project\outputs\hf_genre_model
+  Results appended -> c:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\NLP_final_project\outputs\genre_results.json
+
+ Step 7: Demo predictions (LinearSVC)
+  Lyrics   : "I used to pray for times like this, to rhyme like this"
+  Predicted: rap  |  Actual: rap
+
+  Lyrics   : "We found love in a hopeless place, shining in the dark"
+  Predicted: country  |  Actual: pop
+
+  Lyrics   : "Pour some sugar on me, in the name of love"
+  Predicted: pop  |  Actual: rock
+
+Genre pipeline complete. Outputs saved to outputs/
+PS C:\Users\ynieu\OneDrive\Documenten\Toegepaste wiskunde\Advanced Machine Learning\AdvancedMachineLearning\NLP_final_project> 
