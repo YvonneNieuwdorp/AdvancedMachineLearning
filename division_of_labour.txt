@@ -1,0 +1,76 @@
+Week 2
+    Jessie
+    - song_lyrics.csv opgeschoond
+        - data ingeladen (alleen nodige kolommen: "title", "tag", "artist", "year", "lyrics", "language")
+        - year kolom nummeriek gemaakt
+        - alleen engelse nummers gehouden
+        - alleen muziek tussen 1973 en 2023 gehouden
+        - rijen waar genre mist was verwijderd
+        - rijen met missende waarden verwijderd
+        - clean_song_lyrics.csv opgeslagen
+    - gestart met scrapen van Billboard Hot 100
+        - eerste aanpak: wekelijkse charts scrapen, bleek te zwaar en inconsistent voor dataset-opbouw
+        - tweede aanpak: 1 januari snapshots per jaar, probleem: bias richting vroege-jaar releases, miste zomerhits
+        - uiteindelijke oplossing: gebruik van Billboard Year-End Hot 100 charts
+            - consistente dataset van ~100 nummers per jaar
+            - betere representatie van jaarlijkse populariteit
+            - resultaat opgeslagen als:
+            - billboard_year_end_1973_2023.csv
+    - checks uitgevoerd op Billboard dataset:
+            - geen missing values
+            - correcte year-distributie
+            - rank consistent (1–100)
+            - geen numerieke/onjuiste artiestvelden
+            - dataset gevalideerd als geschikt voor ML-doeleinden
+    
+    - AI:
+        - troubleshooten toen scrapen van artiesten niet lukte
+        - geholpen met een if statement zodat je niet perongeluk de dataa opnieuw download en opschoond (duurt lang namelijk)
+
+    Yvonne
+    - Preprocessing
+    - requirements.text
+    - train test split
+    - create models
+
+    - AI: 
+        - gebruikt om te laten zien wat je moet doen toen ik daar zelf niet uit kwam, daarna zelf gecodeerd
+        - helpen bij errors
+
+Week 3
+    Yvonne
+    - Cleanen clean_song_lyrics
+    - inspectie df bij ingeladen
+    - lineairSVC toegevoegd als model
+    - evaluatie
+    - top woorden
+    - lemmatization
+
+    Jessie
+    - visualisaties aan evaluatie toegevoegd
+    - Docstrings en datatypes toegevoegd aan functies
+    - Overzichtelijke file tree gemaakt met gitignore en alvast een readme file
+
+    - AI:
+        - Overzichtelijke file tree laten genereren die ik vervolgens heb overgenomen de code functies zelf op de goede plaats gezet met de juiste imports
+        - README.md laten genereren, zelf nagekeken of deze correct was
+
+Week 4
+    Jessie
+    - hit_prediction.py toegevoegd
+        - build_hit_dataset()
+        - split_hit_data()
+        - create_hit_models()
+        - _compute_sample_weights()
+        - _save_confusion_matrix()
+        - _plot_hit_model_comparison()
+        - evaluate_hit_models()
+        - show_top_hit_words(model: Pipeline, n: int = 15)
+        - predict_hit(lyrics: str, model: Pipeline)
+        - run_hit_prediction_pipeline()
+    - functionaliteit geimplementeerd in main.py
+
+    - AI:
+        - Geholpen met een error oplossen toen title_clean/artist_clean nog niet aanwezig waren inbillboard, deze worden nu gecheckt en als ze niet aanwezig 
+          zijn aangemaakt op dezelfde manier als elders in het script.
+        - Docstrings en comments laten toevoegen

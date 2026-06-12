@@ -1,76 +1,98 @@
 Week 2
-    Jessie
-    - song_lyrics.csv opgeschoond
-        - data ingeladen (alleen nodige kolommen: "title", "tag", "artist", "year", "lyrics", "language")
-        - year kolom nummeriek gemaakt
-        - alleen engelse nummers gehouden
-        - alleen muziek tussen 1973 en 2023 gehouden
-        - rijen waar genre mist was verwijderd
-        - rijen met missende waarden verwijderd
-        - clean_song_lyrics.csv opgeslagen
-    - gestart met scrapen van Billboard Hot 100
-        - eerste aanpak: wekelijkse charts scrapen, bleek te zwaar en inconsistent voor dataset-opbouw
-        - tweede aanpak: 1 januari snapshots per jaar, probleem: bias richting vroege-jaar releases, miste zomerhits
-        - uiteindelijke oplossing: gebruik van Billboard Year-End Hot 100 charts
-            - consistente dataset van ~100 nummers per jaar
-            - betere representatie van jaarlijkse populariteit
-            - resultaat opgeslagen als:
-            - billboard_year_end_1973_2023.csv
-    - checks uitgevoerd op Billboard dataset:
-            - geen missing values
-            - correcte year-distributie
-            - rank consistent (1–100)
-            - geen numerieke/onjuiste artiestvelden
-            - dataset gevalideerd als geschikt voor ML-doeleinden
-    
-    - AI:
-        - troubleshooten toen scrapen van artiesten niet lukte
-        - geholpen met een if statement zodat je niet perongeluk de dataa opnieuw download en opschoond (duurt lang namelijk)
-
-    Yvonne
-    - Preprocessing
-    - requirements.text
-    - train test split
-    - create models
-
-    - AI: 
-        - gebruikt om te laten zien wat je moet doen toen ik daar zelf niet uit kwam, daarna zelf gecodeerd
-        - helpen bij errors
-
-Week 3
-    Yvonne
-    - Cleanen clean_song_lyrics
-    - inspectie df bij ingeladen
-    - lineairSVC toegevoegd als model
-    - evaluatie
-    - top woorden
-    - lemmatization
 
     Jessie
-    - visualisaties aan evaluatie toegevoegd
-    - Docstrings en datatypes toegevoegd aan functies
-    - Overzichtelijke file tree gemaakt met gitignore en alvast een readme file
+        Cleaned `song_lyrics.csv`
+            Loaded the data, keeping only the required columns: `"title"`, `"tag"`, `"artist"`, `"year"`, `"lyrics"`, and `"language"`
+            Converted the `year` column to a numeric format
+            Retained only English-language songs
+            Kept only songs released between 1973 and 2023
+            Removed rows with missing genre information
+            Removed rows containing missing values
+            Saved the cleaned dataset as `clean_song_lyrics.csv`
 
-    - AI:
-        - Overzichtelijke file tree laten genereren die ik vervolgens heb overgenomen de code functies zelf op de goede plaats gezet met de juiste imports
-        - README.md laten genereren, zelf nagekeken of deze correct was
+        Started scraping Billboard Hot 100 data
+            First approach: scraped weekly charts, but this proved too resource-intensive and inconsistent for dataset construction
+            Second approach: used January 1 snapshots for each year, but this introduced bias toward songs released early in the year and missed many summer hits
+            Final solution: used Billboard Year-End Hot 100 charts
+                Provided a consistent dataset of approximately 100 songs per year
+                Offered a better representation of annual popularity
+                Saved the result as `billboard_year_end_1973_2023.csv`
 
-Week 4
-    Jessie
-    - hit_prediction.py toegevoegd
-        - build_hit_dataset()
-        - split_hit_data()
-        - create_hit_models()
-        - _compute_sample_weights()
-        - _save_confusion_matrix()
-        - _plot_hit_model_comparison()
-        - evaluate_hit_models()
-        - show_top_hit_words(model: Pipeline, n: int = 15)
-        - predict_hit(lyrics: str, model: Pipeline)
-        - run_hit_prediction_pipeline()
-    - functionaliteit geimplementeerd in main.py
+            Performed validation checks on the Billboard dataset
+                No missing values
+                Correct year distribution
+                Consistent rankings (1–100)
+                No numeric or invalid artist fields
+                Dataset validated as suitable for machine learning purposes
 
-    - AI:
-        - Geholpen met een error oplossen toen title_clean/artist_clean nog niet aanwezig waren inbillboard, deze worden nu gecheckt en als ze niet aanwezig 
-          zijn aangemaakt op dezelfde manier als elders in het script.
-        - Docstrings en comments laten toevoegen
+    AI
+
+  Helped troubleshoot issues when artist scraping was not working correctly
+  Assisted in implementing an `if` statement to prevent accidentally re-downloading and re-cleaning the data, which significantly reduces processing time
+
+**Yvonne**
+
+* Data preprocessing
+
+* Created `requirements.txt`
+
+* Implemented train-test split
+
+* Created machine learning models
+
+* **AI**
+
+  * Used to demonstrate how to implement certain functionality when the solution was unclear, after which the code was written independently
+  * Assisted with debugging errors
+
+---
+
+### Week 3
+
+**Yvonne**
+
+* Cleaned `clean_song_lyrics`
+* Inspected the dataframe after loading
+* Added `LinearSVC` as a model
+* Performed model evaluation
+* Analyzed top words
+* Implemented lemmatization
+
+**Jessie**
+
+* Added visualizations to the evaluation process
+
+* Added docstrings and data type annotations to functions
+
+* Created a structured file tree, including a `.gitignore` file and an initial `README.md`
+
+* **AI**
+
+  * Generated a structured file tree, which was then adopted and manually integrated by placing functions in the correct files with the appropriate imports
+  * Generated the initial `README.md`, which was subsequently reviewed and verified for correctness
+
+---
+
+### Week 4
+
+**Jessie**
+
+* Added `hit_prediction.py`
+
+  * `build_hit_dataset()`
+  * `split_hit_data()`
+  * `create_hit_models()`
+  * `_compute_sample_weights()`
+  * `_save_confusion_matrix()`
+  * `_plot_hit_model_comparison()`
+  * `evaluate_hit_models()`
+  * `show_top_hit_words(model: Pipeline, n: int = 15)`
+  * `predict_hit(lyrics: str, model: Pipeline)`
+  * `run_hit_prediction_pipeline()`
+
+* Integrated the new functionality into `main.py`
+
+* **AI**
+
+  * Assisted in resolving an error caused by missing `title_clean` and `artist_clean` columns in the Billboard dataset. The script now checks for these columns and creates them automatically, using the same preprocessing method as elsewhere in the project.
+  * Generated docstrings and comments for the code.
